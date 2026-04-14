@@ -1,0 +1,168 @@
+.landing-page {
+  min-height: 100vh;
+  background: #fff;
+}
+
+.landing-hero {
+  background: linear-gradient(135deg, #000000 0%, #434343 100%);
+  color: white;
+  padding: 120px 20px;
+  text-align: center;
+}
+
+.landing-content h1 {
+  font-family: 'Bodoni Moda', serif;
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  font-weight: 900;
+  letter-spacing: -3px;
+  line-height: 0.95;
+}
+
+.landing-content p {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.25rem;
+  margin-bottom: 2.5rem;
+  opacity: 0.85;
+  font-weight: 300;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.landing-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.landing-buttons .btn-primary,
+.landing-buttons .btn-secondary {
+  padding: 18px 48px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.landing-buttons .btn-primary {
+  background: white;
+  color: #000;
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.2);
+}
+
+.landing-buttons .btn-primary:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(255, 255, 255, 0.3);
+}
+
+.landing-buttons .btn-secondary {
+  background: transparent;
+  color: white;
+  border: 2px solid white;
+}
+
+.landing-buttons .btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-4px);
+}
+
+.landing-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 3rem;
+  padding: 80px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.feature {
+  text-align: center;
+}
+
+.feature-icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.feature h3 {
+  font-family: 'Bodoni Moda', serif;
+  font-size: 1.75rem;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.5px;
+}
+
+.feature p {
+  color: #666;
+}
+
+.landing-preview {
+  background: #f8f9fa;
+  padding: 80px 20px;
+  text-align: center;
+}
+
+.landing-preview h2 {
+  font-family: 'Bodoni Moda', serif;
+  font-size: 3rem;
+  margin-bottom: 3rem;
+  letter-spacing: -1px;
+}
+
+.preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.preview-card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.preview-card:hover {
+  transform: translateY(-12px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.preview-card img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+}
+
+.preview-card h4 {
+  padding: 1.5rem;
+  font-family: 'Bodoni Moda', serif;
+  font-size: 1.5rem;
+  letter-spacing: -0.5px;
+}
+
+@media (max-width: 768px) {
+  .landing-content h1 {
+    font-size: 2.5rem;
+  }
+  
+  .landing-content p {
+    font-size: 1.2rem;
+  }
+  
+  .landing-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .landing-buttons button {
+    width: 100%;
+    max-width: 300px;
+  }
+}

@@ -1,0 +1,298 @@
+.fashion-learning {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.learning-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.learning-header h1 {
+  font-family: 'Bodoni Moda', serif;
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.learning-header p {
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.tabs {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #eee;
+}
+
+.tabs button {
+  padding: 1rem 2rem;
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: #666;
+  border-bottom: 3px solid transparent;
+  transition: all 0.3s;
+}
+
+.tabs button.active {
+  color: #000;
+  border-bottom-color: #000;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 2rem;
+}
+
+.guide-card,
+.outfit-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.guide-card:hover,
+.outfit-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+
+.guide-card img,
+.outfit-card img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+}
+
+.card-content {
+  padding: 1.5rem;
+}
+
+.category {
+  display: inline-block;
+  background: #f0f0f0;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.card-content h3 {
+  font-family: 'Bodoni Moda', serif;
+  font-size: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+.card-content p {
+  color: #666;
+  margin: 0.5rem 0;
+  line-height: 1.6;
+}
+
+.card-meta {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  color: #999;
+  font-size: 0.9rem;
+}
+
+.outfit-badges {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.outfit-badges span {
+  background: #000;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-bottom: 2rem;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.back-btn:hover {
+  background: #f0f0f0;
+}
+
+.guide-detail,
+.outfit-detail {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+.guide-detail img,
+.outfit-detail img {
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+
+.guide-content,
+.outfit-content {
+  padding: 2rem 0;
+}
+
+.guide-category {
+  background: #000;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.guide-content h1,
+.outfit-content h1 {
+  font-family: 'Bodoni Moda', serif;
+  font-size: 2.5rem;
+  margin: 1rem 0;
+}
+
+.guide-meta {
+  display: flex;
+  gap: 1.5rem;
+  color: #666;
+  margin: 1rem 0;
+  font-size: 0.95rem;
+}
+
+.guide-text,
+.outfit-description {
+  line-height: 1.8;
+  color: #333;
+  font-size: 1.1rem;
+  margin: 2rem 0;
+}
+
+.guide-tags {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 2rem 0;
+}
+
+.tag {
+  background: #f0f0f0;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.like-btn {
+  background: #000;
+  color: white;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.like-btn:hover {
+  background: #333;
+}
+
+.outfit-meta {
+  display: flex;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.badge {
+  background: #f0f0f0;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.outfit-products {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 2px solid #eee;
+}
+
+.outfit-products h3 {
+  font-family: 'Bodoni Moda', serif;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1.5rem;
+}
+
+.product-mini {
+  text-align: center;
+}
+
+.product-mini img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.product-mini h4 {
+  font-size: 0.95rem;
+  margin: 0.5rem 0;
+}
+
+.product-mini p {
+  font-weight: 600;
+  margin: 0.25rem 0;
+}
+
+.product-mini .designer {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.loading {
+  text-align: center;
+  padding: 4rem;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+@media (max-width: 768px) {
+  .guide-detail,
+  .outfit-detail {
+    grid-template-columns: 1fr;
+  }
+  
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+}
