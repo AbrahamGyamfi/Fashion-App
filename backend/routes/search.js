@@ -11,9 +11,13 @@ router.get('/', async (req, res) => {
     const cacheKey = `search:${JSON.stringify(req.query)}`;
     
     // Try cache first
-    const cached = await redisClient.get(cacheKey);
-    if (cached) {
-      return res.json(JSON.parse(cached));
+    try {
+      const cached = await redisClient.get(cacheKey);
+      if (cached) {
+        return res.json(JSON.parse(cached));
+      }
+    } catch (cacheErr) {
+      console.log('Redis cache error (continuing without cache):', cacheErr.message);
     }
     
     let query = 'SELECT p.*, d.brand_name as designer_name, d.verified as designer_verified, d.culture_category as designer_culture FROM products p LEFT JOIN designers d ON p.designer_id = d.id WHERE 1=1';
@@ -53,11 +57,16 @@ router.get('/', async (req, res) => {
 
     const result = await pool.query(query, params);
     
-    // Cache for 5 minutes
-    await redisClient.setEx(cacheKey, 300, JSON.stringify(result.rows));
+    // Try to cache for 5 minutes (don't fail if cache fails)
+    try {
+      await redisClient.setEx(cacheKey, 300, JSON.stringify(result.rows));
+    } catch (cacheErr) {
+      console.log('Redis cache write error (continuing):', cacheErr.message);
+    }
     
     res.json(result.rows);
   } catch (err) {
+    console.error('Search error:', err);
     res.status(500).json({ error: err.message });
   }
 });
