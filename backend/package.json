@@ -4,7 +4,8 @@
   "main": "api-gateway.js",
   "scripts": {
     "start": "nodemon server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "add-guides": "node add-cultural-guides.js"
   },
   "dependencies": {
     "axios": "^1.6.0",

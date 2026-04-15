@@ -12,6 +12,7 @@ function VendorDashboard({ user }) {
     price: '',
     stock: '',
     category: 'Tops',
+    culture_category: 'Western',
     size: '',
     color: '',
     image_url: ''
@@ -52,6 +53,7 @@ function VendorDashboard({ user }) {
         price: '',
         stock: '',
         category: 'Tops',
+        culture_category: 'Western',
         size: '',
         color: '',
         image_url: ''
@@ -158,6 +160,17 @@ function VendorDashboard({ user }) {
                 <option value="Dresses">Dresses</option>
                 <option value="Outerwear">Outerwear</option>
                 <option value="Footwear">Footwear</option>
+              </select>
+              <select
+                value={formData.culture_category}
+                onChange={(e) => setFormData({...formData, culture_category: e.target.value})}
+              >
+                <option value="African">African Fashion</option>
+                <option value="Western">Western Fashion</option>
+                <option value="Asian">Asian Fashion</option>
+                <option value="Middle Eastern">Middle Eastern Fashion</option>
+                <option value="Latin American">Latin American Fashion</option>
+                <option value="Fusion">Fusion & Contemporary</option>
               </select>
               <input
                 type="text"

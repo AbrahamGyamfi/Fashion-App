@@ -5,7 +5,7 @@ const redisClient = require('../config/redis');
 
 router.get('/', async (req, res) => {
   try {
-    const { category, search, minPrice, maxPrice, sortBy, designer } = req.query;
+    const { category, search, minPrice, maxPrice, sortBy, designer, cultureCategory } = req.query;
     
     // Create cache key from query params
     const cacheKey = `search:${JSON.stringify(req.query)}`;
@@ -16,13 +16,17 @@ router.get('/', async (req, res) => {
       return res.json(JSON.parse(cached));
     }
     
-    let query = 'SELECT p.*, d.brand_name as designer_name, d.verified as designer_verified FROM products p LEFT JOIN designers d ON p.designer_id = d.id WHERE 1=1';
+    let query = 'SELECT p.*, d.brand_name as designer_name, d.verified as designer_verified, d.culture_category as designer_culture FROM products p LEFT JOIN designers d ON p.designer_id = d.id WHERE 1=1';
     const params = [];
     let paramCount = 1;
 
     if (category) {
       query += ` AND p.category = $${paramCount++}`;
       params.push(category);
+    }
+    if (cultureCategory) {
+      query += ` AND p.culture_category = $${paramCount++}`;
+      params.push(cultureCategory);
     }
     if (search) {
       query += ` AND (p.name ILIKE $${paramCount} OR p.description ILIKE $${paramCount})`;

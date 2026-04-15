@@ -29,6 +29,7 @@ function App() {
   const [showCart, setShowCart] = useState(false);
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedCulture, setSelectedCulture] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [priceRange, setPriceRange] = useState({ min: '', max: '' });
   const [sortBy, setSortBy] = useState('newest');
@@ -46,26 +47,37 @@ function App() {
 
   const handleAuthSuccess = (userData) => {
     console.log('Login user data:', userData);
+    if (!userData || !userData.email) {
+      console.error('Invalid user data received:', userData);
+      return;
+    }
     setUser(userData);
+    localStorage.setItem('user', JSON.stringify(userData));
     setShowAuthModal(false);
   };
 
   const handleLogout = () => {
     setUser(null);
+    localStorage.removeItem('user');
     setViewMode('store');
   };
 
   useEffect(() => {
-    // No localStorage - user must login each session
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
   }, []);
 
   const categories = ['All', 'Tops', 'Bottoms', 'Dresses', 'Outerwear', 'Footwear'];
+  const cultures = ['All', 'African', 'Western', 'Asian', 'Middle Eastern', 'Latin American', 'Fusion'];
 
   const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams();
       if (selectedCategory !== 'All') params.append('category', selectedCategory);
+      if (selectedCulture !== 'All') params.append('cultureCategory', selectedCulture);
       if (searchQuery) params.append('search', searchQuery);
       if (priceRange.min) params.append('minPrice', priceRange.min);
       if (priceRange.max) params.append('maxPrice', priceRange.max);
@@ -80,7 +92,7 @@ function App() {
     } finally {
       setLoading(false);
     }
-  }, [selectedCategory, searchQuery, priceRange, sortBy]);
+  }, [selectedCategory, selectedCulture, searchQuery, priceRange, sortBy]);
 
   useEffect(() => {
     fetchProducts();
@@ -231,6 +243,7 @@ function App() {
 
               <div className="filters-section">
                 <div className="category-filter">
+                  <label className="filter-label">Category:</label>
                   {categories.map(cat => (
                     <button
                       key={cat}
@@ -238,6 +251,19 @@ function App() {
                       onClick={() => setSelectedCategory(cat)}
                     >
                       {cat}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="category-filter">
+                  <label className="filter-label">Culture:</label>
+                  {cultures.map(culture => (
+                    <button
+                      key={culture}
+                      className={`category-btn ${selectedCulture === culture ? 'active' : ''}`}
+                      onClick={() => setSelectedCulture(culture)}
+                    >
+                      {culture}
                     </button>
                   ))}
                 </div>
@@ -284,6 +310,7 @@ function App() {
                     setSearchQuery('');
                     setPriceRange({ min: '', max: '' });
                     setSelectedCategory('All');
+                    setSelectedCulture('All');
                   }}>
                     Clear Filters
                   </button>

@@ -67,6 +67,7 @@ async function initDatabase() {
       verified BOOLEAN DEFAULT false,
       rating DECIMAL(3,2) DEFAULT 0,
       review_count INTEGER DEFAULT 0,
+      culture_category VARCHAR(100),
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
@@ -78,6 +79,7 @@ async function initDatabase() {
       price DECIMAL(10,2) NOT NULL,
       image_url TEXT,
       category VARCHAR(100),
+      culture_category VARCHAR(100),
       size VARCHAR(50),
       color VARCHAR(50),
       stock INTEGER DEFAULT 0,
@@ -170,28 +172,28 @@ async function seedData() {
     ('vendor2@example.com', 'hash123', 'Elegant', 'Designer', 'vendor'),
     ('vendor3@example.com', 'hash123', 'Eco', 'Designer', 'vendor');
 
-    INSERT INTO designers (user_id, brand_name, email, description, subscription_tier, verified, website_url, instagram_url) VALUES
-    (5, 'Urban Threads', 'vendor1@example.com', 'Modern streetwear for the urban lifestyle.', 'premium', true, 'https://urbanthreads.com', 'https://instagram.com/urbanthreads'),
-    (6, 'Elegant Designs', 'vendor2@example.com', 'Timeless elegance meets contemporary fashion.', 'basic', true, 'https://elegantdesigns.com', 'https://instagram.com/elegantdesigns'),
-    (7, 'EcoWear', 'vendor3@example.com', 'Sustainable fashion for a better tomorrow.', 'premium', true, 'https://ecowear.com', 'https://instagram.com/ecowear');
+    INSERT INTO designers (user_id, brand_name, email, description, subscription_tier, verified, website_url, instagram_url, culture_category) VALUES
+    (5, 'Urban Threads', 'vendor1@example.com', 'Modern streetwear for the urban lifestyle.', 'premium', true, 'https://urbanthreads.com', 'https://instagram.com/urbanthreads', 'Western'),
+    (6, 'Elegant Designs', 'vendor2@example.com', 'Timeless elegance meets contemporary fashion.', 'basic', true, 'https://elegantdesigns.com', 'https://instagram.com/elegantdesigns', 'Western'),
+    (7, 'EcoWear', 'vendor3@example.com', 'Sustainable fashion for a better tomorrow.', 'premium', true, 'https://ecowear.com', 'https://instagram.com/ecowear', 'Fusion');
 
-    INSERT INTO products (designer_id, name, price, stock, category, size, color, image_url, featured, status) VALUES
-    (1, 'Classic White T-Shirt', 29.99, 50, 'Tops', 'M', 'White', 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500', true, 'approved'),
-    (1, 'Slim Fit Jeans', 79.99, 30, 'Bottoms', 'L', 'Blue', 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=500', false, 'approved'),
-    (1, 'Black Hoodie', 59.99, 45, 'Tops', 'L', 'Black', 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=500', false, 'approved'),
-    (1, 'Cargo Pants', 89.99, 35, 'Bottoms', 'M', 'Khaki', 'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=500', false, 'approved'),
-    (2, 'Leather Jacket', 199.99, 15, 'Outerwear', 'M', 'Black', 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500', true, 'approved'),
-    (2, 'Summer Dress', 89.99, 25, 'Dresses', 'S', 'Floral', 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500', false, 'approved'),
-    (2, 'Silk Blouse', 69.99, 20, 'Tops', 'M', 'Cream', 'https://images.unsplash.com/photo-1564257577-7fd112d6b4fd?w=500', true, 'approved'),
-    (2, 'Midi Skirt', 79.99, 18, 'Bottoms', 'S', 'Navy', 'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=500', false, 'approved'),
-    (2, 'Wool Coat', 249.99, 10, 'Outerwear', 'M', 'Camel', 'https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=500', true, 'approved'),
-    (3, 'White Sneakers', 119.99, 40, 'Footwear', '42', 'White', 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=500', true, 'approved'),
-    (3, 'Organic Cotton Tee', 39.99, 60, 'Tops', 'L', 'Green', 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=500', false, 'approved'),
-    (3, 'Recycled Denim Jacket', 129.99, 22, 'Outerwear', 'M', 'Blue', 'https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=500', false, 'approved'),
-    (3, 'Hemp Joggers', 69.99, 38, 'Bottoms', 'L', 'Gray', 'https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=500', false, 'approved'),
-    (3, 'Canvas Sneakers', 89.99, 50, 'Footwear', '40', 'Beige', 'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=500', false, 'approved'),
-    (1, 'Graphic Tee', 34.99, 55, 'Tops', 'M', 'Black', 'https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=500', false, 'approved'),
-    (2, 'Evening Gown', 299.99, 8, 'Dresses', 'M', 'Black', 'https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=500', true, 'approved');
+    INSERT INTO products (designer_id, name, price, stock, category, culture_category, size, color, image_url, featured, status) VALUES
+    (1, 'Classic White T-Shirt', 29.99, 50, 'Tops', 'Western', 'M', 'White', 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500', true, 'approved'),
+    (1, 'Slim Fit Jeans', 79.99, 30, 'Bottoms', 'Western', 'L', 'Blue', 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=500', false, 'approved'),
+    (1, 'Black Hoodie', 59.99, 45, 'Tops', 'Western', 'L', 'Black', 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=500', false, 'approved'),
+    (1, 'Cargo Pants', 89.99, 35, 'Bottoms', 'Western', 'M', 'Khaki', 'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=500', false, 'approved'),
+    (2, 'Leather Jacket', 199.99, 15, 'Outerwear', 'Western', 'M', 'Black', 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500', true, 'approved'),
+    (2, 'Summer Dress', 89.99, 25, 'Dresses', 'Western', 'S', 'Floral', 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500', false, 'approved'),
+    (2, 'Silk Blouse', 69.99, 20, 'Tops', 'Western', 'M', 'Cream', 'https://images.unsplash.com/photo-1564257577-7fd112d6b4fd?w=500', true, 'approved'),
+    (2, 'Midi Skirt', 79.99, 18, 'Bottoms', 'Western', 'S', 'Navy', 'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=500', false, 'approved'),
+    (2, 'Wool Coat', 249.99, 10, 'Outerwear', 'Western', 'M', 'Camel', 'https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=500', true, 'approved'),
+    (3, 'White Sneakers', 119.99, 40, 'Footwear', 'Fusion', '42', 'White', 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=500', true, 'approved'),
+    (3, 'Organic Cotton Tee', 39.99, 60, 'Tops', 'Fusion', 'L', 'Green', 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=500', false, 'approved'),
+    (3, 'Recycled Denim Jacket', 129.99, 22, 'Outerwear', 'Fusion', 'M', 'Blue', 'https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=500', false, 'approved'),
+    (3, 'Hemp Joggers', 69.99, 38, 'Bottoms', 'Fusion', 'L', 'Gray', 'https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=500', false, 'approved'),
+    (3, 'Canvas Sneakers', 89.99, 50, 'Footwear', 'Fusion', '40', 'Beige', 'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=500', false, 'approved'),
+    (1, 'Graphic Tee', 34.99, 55, 'Tops', 'Western', 'M', 'Black', 'https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=500', false, 'approved'),
+    (2, 'Evening Gown', 299.99, 8, 'Dresses', 'Western', 'M', 'Black', 'https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=500', true, 'approved');
 
     INSERT INTO reviews (product_id, user_id, rating, title, comment, verified_purchase) VALUES
     (1, 1, 5, 'Perfect fit!', 'Love this t-shirt!', true),
@@ -207,7 +209,9 @@ async function seedData() {
     ('Color Theory for Fashion', 'Fashion Education', 'Understanding color theory can elevate your style game. Complementary colors (opposite on the color wheel) create bold looks, while analogous colors (next to each other) offer harmony. Neutrals like black, white, and beige are versatile bases.', 'https://images.unsplash.com/photo-1558769132-cb1aea1c8e77?w=500', 1, ARRAY['color', 'basics', 'theory']),
     ('Sustainable Fashion Guide', 'Trends', 'Sustainable fashion is not just a trend—it''s the future. Choose quality over quantity, support ethical brands, buy second-hand, and care for your clothes properly to extend their life. Every small choice makes a difference.', 'https://images.unsplash.com/photo-1532453288672-3a27e9be9efd?w=500', 1, ARRAY['sustainable', 'eco', 'ethical']),
     ('Dressing for Your Body Type', 'Styling Tips', 'Understanding your body shape helps you choose flattering silhouettes. Pear shapes shine in A-line skirts, apple shapes look great in empire waists, hourglass figures rock fitted styles, and rectangle shapes benefit from belted looks.', 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=500', 1, ARRAY['body-type', 'fit', 'styling']),
-    ('2024 Fashion Trends', 'Trends', 'This year brings oversized blazers, wide-leg pants, bold prints, sustainable materials, and vintage revival. Mix these trends with your personal style for a fresh, modern look that feels authentically you.', 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=500', 1, ARRAY['trends', '2024', 'modern']);
+    ('2024 Fashion Trends', 'Trends', 'This year brings oversized blazers, wide-leg pants, bold prints, sustainable materials, and vintage revival. Mix these trends with your personal style for a fresh, modern look that feels authentically you.', 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=500', 1, ARRAY['trends', '2024', 'modern']),
+    ('African Fashion Heritage', 'Cultural Fashion', 'African fashion celebrates vibrant prints, bold patterns, and rich cultural heritage. From Ankara wax prints to Kente cloth, each pattern tells a story. Modern designers blend traditional textiles with contemporary silhouettes, creating stunning fusion pieces that honor heritage while embracing innovation.', 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=500', 1, ARRAY['african', 'cultural', 'heritage']),
+    ('Asian Fashion Aesthetics', 'Cultural Fashion', 'Asian fashion combines minimalist aesthetics with intricate details. From Japanese kimono-inspired designs to Korean hanbok fusion, Asian fashion emphasizes clean lines, quality fabrics, and thoughtful construction. Modern interpretations blend traditional elements with contemporary streetwear.', 'https://images.unsplash.com/photo-1617127365659-c47fa864d8bc?w=500', 1, ARRAY['asian', 'cultural', 'minimalism']);
 
     INSERT INTO outfit_ideas (title, description, occasion, season, style_type, image_url, product_ids, created_by) VALUES
     ('Casual Weekend Look', 'Perfect for brunch or shopping with friends. Pair a classic white tee with slim jeans and white sneakers for an effortlessly cool vibe.', 'Casual', 'All Season', 'Streetwear', 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=500', ARRAY[1, 2, 10], 1),

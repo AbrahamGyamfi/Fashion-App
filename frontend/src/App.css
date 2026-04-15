@@ -122,6 +122,15 @@ body {
   margin-bottom: 20px;
   overflow-x: auto;
   padding: 8px 0;
+  align-items: center;
+}
+
+.filter-label {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  margin-right: 8px;
 }
 
 .category-btn {
