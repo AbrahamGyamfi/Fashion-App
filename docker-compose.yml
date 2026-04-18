@@ -4,11 +4,11 @@ services:
   postgres:
     image: postgres:15-alpine
     environment:
-      POSTGRES_DB: shopnow
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ${POSTGRES_DB:-shopnow}
+      POSTGRES_USER: ${POSTGRES_USER:-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -17,76 +17,32 @@ services:
   redis:
     image: redis:7-alpine
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT:-6379}:6379"
     networks:
       - shopnow-network
 
-  product-service:
-    build: ./backend/services/product-service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
     ports:
-      - "3001:3001"
+      - "${BACKEND_PORT:-3000}:3000"
     environment:
-      DATABASE_URL: postgresql://admin:password@postgres:5432/shopnow
+      DATABASE_URL: postgresql://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-password}@postgres:5432/${POSTGRES_DB:-shopnow}
       REDIS_URL: redis://redis:6379
-      PORT: 3001
-    depends_on:
-      - postgres
-      - redis
-    networks:
-      - shopnow-network
-
-  search-service:
-    build: ./backend/services/search-service
-    ports:
-      - "3002:3002"
-    environment:
-      DATABASE_URL: postgresql://admin:password@postgres:5432/shopnow
-      REDIS_URL: redis://redis:6379
-      PORT: 3002
-    depends_on:
-      - postgres
-      - redis
-    networks:
-      - shopnow-network
-
-  cart-service:
-    build: ./backend/services/cart-service
-    ports:
-      - "3003:3003"
-    environment:
-      REDIS_URL: redis://redis:6379
-      PRODUCT_SERVICE_URL: http://product-service:3001
-      PORT: 3003
-    depends_on:
-      - redis
-      - product-service
-    networks:
-      - shopnow-network
-
-  api-gateway:
-    build: ./backend
-    ports:
-      - "3000:3000"
-    environment:
-      PRODUCT_SERVICE_URL: http://product-service:3001
-      SEARCH_SERVICE_URL: http://search-service:3002
-      CART_SERVICE_URL: http://cart-service:3003
       PORT: 3000
+      NODE_ENV: ${NODE_ENV:-production}
     depends_on:
-      - product-service
-      - search-service
-      - cart-service
+      - postgres
+      - redis
     networks:
       - shopnow-network
-
-  frontend:
-    build: ./frontend
-    ports:
-      - "8080:80"
-    depends_on:
-      - api-gateway
-    networks:
-      - shopnow-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 40s
 
 networks:
   shopnow-network:
