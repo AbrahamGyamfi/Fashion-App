@@ -1,0 +1,168 @@
+name: Application CI/CD
+
+on:
+  push:
+    branches: [main, dev]
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+  pull_request:
+    branches: [main, dev]
+
+env:
+  AWS_REGION: us-east-1
+  NODE_VERSION: '18'
+
+jobs:
+  test:
+    name: Test & Security
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install Backend Dependencies
+        run: npm ci
+        working-directory: ./backend
+
+      - name: Security Scan
+        run: npm audit --audit-level=high
+        working-directory: ./backend
+        continue-on-error: true
+
+      - name: SAST Scan
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: p/security-audit
+        continue-on-error: true
+
+  build:
+    name: Build & Push
+    needs: [test]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Determine Environment
+        id: env
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "env=prod" >> $GITHUB_OUTPUT
+            echo "cluster=shopnow-prod" >> $GITHUB_OUTPUT
+            echo "service=shopnow-prod" >> $GITHUB_OUTPUT
+          else
+            echo "env=dev" >> $GITHUB_OUTPUT
+            echo "cluster=shopnow-dev" >> $GITHUB_OUTPUT
+            echo "service=shopnow-dev" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to ECR
+        id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build Docker Image
+        run: |
+          docker build -f backend/Dockerfile.prod -t backend:${{ github.sha }} ./backend
+
+      - name: Scan Image
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: backend:${{ github.sha }}
+          severity: HIGH,CRITICAL
+        continue-on-error: true
+
+      - name: Push to ECR
+        run: |
+          docker tag backend:${{ github.sha }} ${{ steps.ecr.outputs.registry }}/shopnow-backend:${{ github.sha }}
+          docker tag backend:${{ github.sha }} ${{ steps.ecr.outputs.registry }}/shopnow-backend:${{ steps.env.outputs.env }}-latest
+          docker push ${{ steps.ecr.outputs.registry }}/shopnow-backend:${{ github.sha }}
+          docker push ${{ steps.ecr.outputs.registry }}/shopnow-backend:${{ steps.env.outputs.env }}-latest
+
+  deploy:
+    name: Deploy to ECS
+    needs: [build]
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
+    
+    steps:
+      - name: Determine Environment
+        id: env
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "env=prod" >> $GITHUB_OUTPUT
+            echo "cluster=shopnow-prod" >> $GITHUB_OUTPUT
+            echo "service=shopnow-prod" >> $GITHUB_OUTPUT
+          else
+            echo "env=dev" >> $GITHUB_OUTPUT
+            echo "cluster=shopnow-dev" >> $GITHUB_OUTPUT
+            echo "service=shopnow-dev" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy to ECS
+        run: |
+          aws ecs update-service \
+            --cluster ${{ steps.env.outputs.cluster }} \
+            --service ${{ steps.env.outputs.service }} \
+            --force-new-deployment \
+            --region ${{ env.AWS_REGION }}
+
+      - name: Wait for Deployment
+        run: |
+          aws ecs wait services-stable \
+            --cluster ${{ steps.env.outputs.cluster }} \
+            --services ${{ steps.env.outputs.service }} \
+            --region ${{ env.AWS_REGION }}
+
+      - name: Health Check
+        run: |
+          ALB_DNS=$(aws elbv2 describe-load-balancers \
+            --names shopnow-alb-${{ steps.env.outputs.env }} \
+            --query 'LoadBalancers[0].DNSName' \
+            --output text)
+          
+          for i in {1..5}; do
+            if curl -f http://$ALB_DNS/api/health; then
+              echo "✅ Health check passed"
+              exit 0
+            fi
+            echo "Retry $i/5..."
+            sleep 10
+          done
+          echo "❌ Health check failed"
+          exit 1
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## 🚀 Application Deployment" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment:** ${{ steps.env.outputs.env }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Status:** ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+
