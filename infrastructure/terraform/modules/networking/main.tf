@@ -79,20 +79,12 @@ resource "aws_route_table" "private" {
   count  = length(var.availability_zones)
   vpc_id = aws_vpc.main.id
 
-  # Route to NAT Gateway if enabled, otherwise to NAT instance
+  # Route to NAT Gateway if enabled (NAT instance route handled in root main.tf)
   dynamic "route" {
     for_each = var.use_nat_gateway ? [1] : []
     content {
       cidr_block     = "0.0.0.0/0"
       nat_gateway_id = aws_nat_gateway.main[count.index].id
-    }
-  }
-
-  dynamic "route" {
-    for_each = var.use_nat_gateway ? [] : [1]
-    content {
-      cidr_block  = "0.0.0.0/0"
-      instance_id = var.nat_instance_id
     }
   }
 

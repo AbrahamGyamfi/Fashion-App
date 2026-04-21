@@ -24,9 +24,3 @@ variable "use_nat_gateway" {
   type        = bool
   default     = false
 }
-
-variable "nat_instance_id" {
-  description = "NAT instance ID (required if use_nat_gateway is false)"
-  type        = string
-  default     = null
-}

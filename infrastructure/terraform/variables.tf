@@ -32,7 +32,7 @@ variable "db_name" {
 variable "db_username" {
   description = "Database master username"
   type        = string
-  
+
   validation {
     condition     = length(var.db_username) >= 3 && length(var.db_username) <= 16
     error_message = "Database username must be between 3 and 16 characters."
@@ -43,7 +43,7 @@ variable "db_password" {
   description = "Database master password (minimum 16 characters)"
   type        = string
   sensitive   = true
-  
+
   validation {
     condition     = length(var.db_password) >= 16
     error_message = "Database password must be at least 16 characters for security."
@@ -79,7 +79,7 @@ variable "redis_password" {
   description = "Redis authentication token (minimum 16 characters)"
   type        = string
   sensitive   = true
-  
+
   validation {
     condition     = length(var.redis_password) >= 16
     error_message = "Redis password must be at least 16 characters for security."
@@ -128,7 +128,7 @@ variable "jwt_secret" {
   description = "JWT secret key (minimum 32 characters)"
   type        = string
   sensitive   = true
-  
+
   validation {
     condition     = length(var.jwt_secret) >= 32
     error_message = "JWT secret must be at least 32 characters for security."
@@ -139,7 +139,7 @@ variable "session_secret" {
   description = "Session secret key (minimum 32 characters)"
   type        = string
   sensitive   = true
-  
+
   validation {
     condition     = length(var.session_secret) >= 32
     error_message = "Session secret must be at least 32 characters for security."
@@ -151,7 +151,7 @@ variable "acm_certificate_arn" {
   description = "ARN of ACM certificate for HTTPS (optional, for production use)"
   type        = string
   default     = ""
-  
+
   validation {
     condition     = var.acm_certificate_arn == "" || can(regex("^arn:aws:acm:[a-z0-9-]+:[0-9]{12}:certificate/[a-z0-9-]+$", var.acm_certificate_arn))
     error_message = "ACM certificate ARN must be empty or a valid AWS ARN format."
