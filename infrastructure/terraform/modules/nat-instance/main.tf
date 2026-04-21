@@ -1,11 +1,11 @@
-# Data source for latest Amazon Linux 2023 ARM AMI
-data "aws_ami" "amazon_linux_2023_arm" {
+# Data source for latest Amazon Linux 2023 x86_64 AMI
+data "aws_ami" "amazon_linux_2023" {
   most_recent = true
   owners      = ["amazon"]
 
   filter {
     name   = "name"
-    values = ["al2023-ami-*-arm64"]
+    values = ["al2023-ami-*-x86_64"]
   }
 
   filter {
@@ -15,7 +15,7 @@ data "aws_ami" "amazon_linux_2023_arm" {
 
   filter {
     name   = "architecture"
-    values = ["arm64"]
+    values = ["x86_64"]
   }
 }
 
@@ -191,7 +191,7 @@ locals {
 
 # NAT Instance
 resource "aws_instance" "nat_instance" {
-  ami                    = data.aws_ami.amazon_linux_2023_arm.id
+  ami                    = data.aws_ami.amazon_linux_2023.id
   instance_type          = var.instance_type
   subnet_id              = var.public_subnet_id
   vpc_security_group_ids = [aws_security_group.nat_instance.id]
@@ -205,8 +205,8 @@ resource "aws_instance" "nat_instance" {
   # Enable detailed monitoring
   monitoring = true
 
-  # Use EBS-optimized
-  ebs_optimized = true
+  # Use EBS-optimized (not available for t2.micro)
+  ebs_optimized = false
 
   root_block_device {
     volume_type           = "gp3"
