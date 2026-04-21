@@ -164,31 +164,6 @@ variable "redis_data_dir" {
   default     = "/data"
 }
 
-# Deployment Configuration
-variable "deployment_maximum_percent" {
-  description = "Maximum percentage of tasks to run during deployment"
-  type        = number
-  default     = 200
-}
-
-variable "deployment_minimum_healthy_percent" {
-  description = "Minimum percentage of healthy tasks during deployment"
-  type        = number
-  default     = 100
-}
-
-variable "enable_circuit_breaker" {
-  description = "Enable deployment circuit breaker"
-  type        = bool
-  default     = true
-}
-
-variable "enable_circuit_breaker_rollback" {
-  description = "Enable automatic rollback on deployment failure"
-  type        = bool
-  default     = true
-}
-
 # Auto-scaling Configuration
 variable "cpu_target_value" {
   description = "Target CPU utilization percentage for auto-scaling"

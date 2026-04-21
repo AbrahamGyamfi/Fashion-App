@@ -160,17 +160,11 @@ resource "aws_ecs_service" "main" {
     container_port   = var.container_port
   }
 
-  deployment_configuration {
-    maximum_percent         = var.deployment_maximum_percent
-    minimum_healthy_percent = var.deployment_minimum_healthy_percent
-  }
-
-  deployment_circuit_breaker {
-    enable   = var.enable_circuit_breaker
-    rollback = var.enable_circuit_breaker_rollback
-  }
-
   tags = var.tags
+
+  lifecycle {
+    ignore_changes = [desired_count]
+  }
 }
 
 # Auto Scaling
