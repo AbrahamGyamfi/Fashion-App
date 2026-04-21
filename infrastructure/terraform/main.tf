@@ -38,9 +38,11 @@ data "aws_availability_zones" "available" {
 # Local variables
 locals {
   account_id = data.aws_caller_identity.current.account_id
-  # Single AZ for all environments
-  az_count     = 1
-  azs          = slice(data.aws_availability_zones.available.names, 0, local.az_count)
+  # ALB requires 2 AZs, but we only use 1 AZ for ECS (cost optimization)
+  alb_az_count = 2 # For ALB in public subnets
+  ecs_az_count = 1 # For ECS in private subnet
+  alb_azs      = slice(data.aws_availability_zones.available.names, 0, local.alb_az_count)
+  ecs_azs      = slice(data.aws_availability_zones.available.names, 0, local.ecs_az_count)
   project_name = var.project_name
 
   # Environment-specific configurations
@@ -59,14 +61,15 @@ locals {
   }
 }
 
-# VPC and Networking (without NAT instance dependency)
+# VPC and Networking
 module "networking" {
   source = "./modules/networking"
 
-  environment        = var.environment
-  vpc_cidr           = var.vpc_cidr
-  availability_zones = local.azs
-  use_nat_gateway    = false
+  environment                = var.environment
+  vpc_cidr                   = var.vpc_cidr
+  public_availability_zones  = local.alb_azs
+  private_availability_zones = local.ecs_azs
+  use_nat_gateway            = false
 
   tags = local.common_tags
 }
@@ -135,7 +138,7 @@ module "secrets" {
   tags = local.common_tags
 }
 
-# Application Load Balancer
+# Network Load Balancer (works with single AZ)
 module "alb" {
   source = "./modules/alb"
 
