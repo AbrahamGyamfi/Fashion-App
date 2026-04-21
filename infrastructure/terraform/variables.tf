@@ -146,14 +146,15 @@ variable "session_secret" {
   }
 }
 
-# SSL Certificate
+# SSL Certificate (Optional)
 variable "acm_certificate_arn" {
-  description = "ARN of ACM certificate for HTTPS (required for production)"
+  description = "ARN of ACM certificate for HTTPS (optional, for production use)"
   type        = string
+  default     = ""
   
   validation {
-    condition     = can(regex("^arn:aws:acm:[a-z0-9-]+:[0-9]{12}:certificate/[a-z0-9-]+$", var.acm_certificate_arn))
-    error_message = "ACM certificate ARN must be a valid AWS ARN format."
+    condition     = var.acm_certificate_arn == "" || can(regex("^arn:aws:acm:[a-z0-9-]+:[0-9]{12}:certificate/[a-z0-9-]+$", var.acm_certificate_arn))
+    error_message = "ACM certificate ARN must be empty or a valid AWS ARN format."
   }
 }
 
