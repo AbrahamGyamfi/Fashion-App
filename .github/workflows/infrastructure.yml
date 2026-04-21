@@ -61,20 +61,20 @@ jobs:
       - name: Create S3 Backend Bucket
         run: |
           # Check if bucket exists
-          if ! aws s3 ls s3://shopnow-terraform-state 2>/dev/null; then
+          if ! aws s3 ls s3://shopnow-terraform-state-abrahamgyamfi 2>/dev/null; then
             echo "Creating S3 bucket for Terraform state..."
             aws s3api create-bucket \
-              --bucket shopnow-terraform-state \
+              --bucket shopnow-terraform-state-abrahamgyamfi \
               --region ${{ env.AWS_REGION }}
             
             # Enable versioning
             aws s3api put-bucket-versioning \
-              --bucket shopnow-terraform-state \
+              --bucket shopnow-terraform-state-abrahamgyamfi \
               --versioning-configuration Status=Enabled
             
             # Enable encryption
             aws s3api put-bucket-encryption \
-              --bucket shopnow-terraform-state \
+              --bucket shopnow-terraform-state-abrahamgyamfi \
               --server-side-encryption-configuration '{
                 "Rules": [{
                   "ApplyServerSideEncryptionByDefault": {
@@ -86,7 +86,7 @@ jobs:
             
             # Block public access
             aws s3api put-public-access-block \
-              --bucket shopnow-terraform-state \
+              --bucket shopnow-terraform-state-abrahamgyamfi \
               --public-access-block-configuration \
                 "BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true"
             
