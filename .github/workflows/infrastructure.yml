@@ -144,7 +144,7 @@ jobs:
           postgres_image = "postgres:15-alpine"
           redis_image    = "redis:7-alpine"
           
-          nat_instance_type = "t4g.nano"
+          nat_instance_type = "t3.micro"
           enable_nat_ssh    = false
           
           tags = {
