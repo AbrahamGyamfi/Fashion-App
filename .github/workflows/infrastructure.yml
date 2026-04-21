@@ -100,31 +100,25 @@ jobs:
         run: terraform plan -var-file="${{ steps.env.outputs.env }}.tfvars" -out=tfplan
         working-directory: ./infrastructure/terraform
         env:
-          TF_VAR_db_password: ${{ secrets[format('{0}_DB_PASSWORD', steps.env.outputs.env == 'production' && 'PROD' || 'STAGE')] }}
-          TF_VAR_redis_password: ${{ secrets[format('{0}_REDIS_PASSWORD', steps.env.outputs.env == 'production' && 'PROD' || 'STAGE')] }}
-          TF_VAR_jwt_secret: ${{ secrets[format('{0}_JWT_SECRET', steps.env.outputs.env == 'production' && 'PROD' || 'STAGE')] }}
-          TF_VAR_session_secret: ${{ secrets[format('{0}_SESSION_SECRET', steps.env.outputs.env == 'production' && 'PROD' || 'STAGE')] }}
+          TF_VAR_db_password: ${{ steps.env.outputs.env == 'production' && secrets.PROD_DB_PASSWORD || secrets.STAGE_DB_PASSWORD }}
+          TF_VAR_redis_password: ${{ steps.env.outputs.env == 'production' && secrets.PROD_REDIS_PASSWORD || secrets.STAGE_REDIS_PASSWORD }}
+          TF_VAR_jwt_secret: ${{ steps.env.outputs.env == 'production' && secrets.PROD_JWT_SECRET || secrets.STAGE_JWT_SECRET }}
+          TF_VAR_session_secret: ${{ steps.env.outputs.env == 'production' && secrets.PROD_SESSION_SECRET || secrets.STAGE_SESSION_SECRET }}
 
       - name: Terraform Apply
-        if: |
-          (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/stage')) ||
-          (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'apply')
+        if: (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/stage')) || (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'apply')
         run: terraform apply -auto-approve tfplan
         working-directory: ./infrastructure/terraform
-        environment:
-          name: ${{ steps.env.outputs.env }}
 
       - name: Terraform Destroy
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'destroy'
         run: terraform destroy -var-file="${{ steps.env.outputs.env }}.tfvars" -auto-approve
         working-directory: ./infrastructure/terraform
-        environment:
-          name: ${{ steps.env.outputs.env }}-destroy
         env:
-          TF_VAR_db_password: ${{ secrets[format('{0}_DB_PASSWORD', steps.env.outputs.env == 'production' && 'PROD' || 'STAGE')] }}
-          TF_VAR_redis_password: ${{ secrets[format('{0}_REDIS_PASSWORD', steps.env.outputs.env == 'production' && 'PROD' || 'STAGE')] }}
-          TF_VAR_jwt_secret: ${{ secrets[format('{0}_JWT_SECRET', steps.env.outputs.env == 'production' && 'PROD' || 'STAGE')] }}
-          TF_VAR_session_secret: ${{ secrets[format('{0}_SESSION_SECRET', steps.env.outputs.env == 'production' && 'PROD' || 'STAGE')] }}
+          TF_VAR_db_password: ${{ steps.env.outputs.env == 'production' && secrets.PROD_DB_PASSWORD || secrets.STAGE_DB_PASSWORD }}
+          TF_VAR_redis_password: ${{ steps.env.outputs.env == 'production' && secrets.PROD_REDIS_PASSWORD || secrets.STAGE_REDIS_PASSWORD }}
+          TF_VAR_jwt_secret: ${{ steps.env.outputs.env == 'production' && secrets.PROD_JWT_SECRET || secrets.STAGE_JWT_SECRET }}
+          TF_VAR_session_secret: ${{ steps.env.outputs.env == 'production' && secrets.PROD_SESSION_SECRET || secrets.STAGE_SESSION_SECRET }}
 
       - name: Summary
         if: always()
