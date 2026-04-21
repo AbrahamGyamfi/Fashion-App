@@ -128,8 +128,6 @@ jobs:
     needs: [build]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && (github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/main')
-    environment:
-      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
     
     steps:
       - name: Determine Environment
