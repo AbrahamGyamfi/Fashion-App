@@ -250,15 +250,21 @@ backend/
 
 ### Security Scanning
 
-This project uses **dual SAST scanning** for comprehensive security:
+This project uses **triple SAST scanning** for comprehensive security:
 
-1. **Semgrep** (Fast Security - All PRs)
+1. **GitLeaks** (Secrets Detection - All PRs)
+   - Runs on every pull request and push
+   - ~10 seconds scan time
+   - Detects hardcoded secrets, API keys, passwords
+   - Prevents credential leaks
+
+2. **Semgrep** (Fast Security - All PRs)
    - Runs on every pull request
    - ~30 seconds scan time
    - Focuses on security vulnerabilities
    - Blocks PRs with high-severity issues
 
-2. **SonarCloud** (Deep Analysis - dev/stage/main)
+3. **SonarCloud** (Deep Analysis - dev/stage/main)
    - Runs on push to important branches
    - ~3-5 minutes scan time
    - Security + Code Quality + Coverage

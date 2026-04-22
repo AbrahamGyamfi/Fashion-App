@@ -1,0 +1,28 @@
+# GitLeaks Configuration
+# Detects secrets, API keys, passwords, and other sensitive data
+
+[extend]
+# Use default GitLeaks rules
+useDefault = true
+
+[allowlist]
+description = "Allowlisted files and patterns"
+
+# Allowlist specific files
+paths = [
+  '''package-lock\.json''',
+  '''\.semgrepignore''',
+  '''sonar-project\.properties''',
+]
+
+# Allowlist specific patterns (example passwords in documentation)
+regexes = [
+  '''hash123''',  # Example password in README
+  '''password''', # Generic password word in docs
+]
+
+# Allowlist specific commits (if needed)
+commits = []
+
+# Allowlist specific stopwords
+stopwords = []
