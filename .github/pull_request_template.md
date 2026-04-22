@@ -7,13 +7,13 @@ Closes #<!-- GitHub issue number -->
 <!-- Or for Jira: SHOP-123 -->
 
 ## Type of Change
-- [ ]  New feature
-- [ ]  Bug fix
-- [ ]  Infrastructure change
-- [ ]  Hotfix
-- [ ]  Dependency update
-- [ ]  Refactor (no functional change)
-- [ ]  Documentation update
+- [ ] New feature
+- [ ] Bug fix
+- [ ] Infrastructure change
+- [ ] Hotfix
+- [ ] Dependency update
+- [ ] Refactor (no functional change)
+- [ ] Documentation update
 
 ## How Was It Tested?
 <!-- Describe exactly how you tested this change -->
