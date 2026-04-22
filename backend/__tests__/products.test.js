@@ -6,7 +6,16 @@ jest.mock('../config/database', () => ({
   query: jest.fn()
 }));
 
+// Mock Redis
+jest.mock('../config/redis', () => ({
+  get: jest.fn(),
+  setEx: jest.fn(),
+  del: jest.fn(),
+  keys: jest.fn()
+}));
+
 const db = require('../config/database');
+const redis = require('../config/redis');
 
 describe('Products API', () => {
   let app;
@@ -15,6 +24,7 @@ describe('Products API', () => {
     app = express();
     app.use(express.json());
     jest.clearAllMocks();
+    redis.get.mockResolvedValue(null); // Default: no cache
   });
 
   describe('GET /api/products', () => {

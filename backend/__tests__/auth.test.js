@@ -21,12 +21,21 @@ describe('Auth API Integration Tests', () => {
       const newUser = {
         email: 'test@example.com',
         password: 'password123',
-        name: 'Test User',
-        role: 'buyer'
+        first_name: 'Test',
+        last_name: 'User',
+        user_type: 'buyer'
       };
 
-      db.query.mockResolvedValueOnce({ rows: [] }) // Check if user exists
-               .mockResolvedValueOnce({ rows: [{ id: 1, ...newUser }] }); // Insert user
+      db.query.mockResolvedValueOnce({ 
+        rows: [{ 
+          id: 1, 
+          email: newUser.email,
+          first_name: newUser.first_name,
+          last_name: newUser.last_name,
+          user_type: newUser.user_type,
+          created_at: new Date()
+        }] 
+      });
 
       const authRoute = require('../routes/auth');
       app.use('/api/auth', authRoute);
@@ -35,17 +44,22 @@ describe('Auth API Integration Tests', () => {
         .post('/api/auth/register')
         .send(newUser);
 
-      expect(response.status).toBe(201);
+      expect(response.status).toBe(200);
       expect(response.body).toHaveProperty('id');
+      expect(response.body.email).toBe(newUser.email);
     });
 
     it('should reject duplicate email', async () => {
       const existingUser = {
         email: 'existing@example.com',
-        password: 'password123'
+        password: 'password123',
+        first_name: 'Existing',
+        last_name: 'User'
       };
 
-      db.query.mockResolvedValue({ rows: [{ id: 1 }] });
+      const dbError = new Error('duplicate key value');
+      dbError.code = '23505';
+      db.query.mockRejectedValueOnce(dbError);
 
       const authRoute = require('../routes/auth');
       app.use('/api/auth', authRoute);
@@ -55,6 +69,8 @@ describe('Auth API Integration Tests', () => {
         .send(existingUser);
 
       expect(response.status).toBe(400);
+      expect(response.body).toHaveProperty('error');
+      expect(response.body.error).toBe('Email already exists');
     });
   });
 
