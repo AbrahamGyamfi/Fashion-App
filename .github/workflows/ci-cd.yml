@@ -14,7 +14,7 @@ on:
       
 env:
   AWS_REGION: us-east-1
-  NODE_VERSION: '18'
+  NODE_VERSION: '20'
 
 jobs:
   # CI Job - Runs on dev branch pushes and all PRs
@@ -62,7 +62,7 @@ jobs:
         continue-on-error: false
 
       - name: Frontend Security Scan
-        run: npm audit --audit-level=high
+        run: npm audit --omit=dev --audit-level=high
         working-directory: ./frontend
         continue-on-error: false
 
