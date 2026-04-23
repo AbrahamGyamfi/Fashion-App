@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import App from '../App';
 import axios from 'axios';
 
@@ -21,12 +21,17 @@ describe('App Component', () => {
   });
 
   it('renders without crashing', async () => {
-    render(<App />);
+    await act(async () => {
+      render(<App />);
+    });
     await waitFor(() => expect(axios.get).toHaveBeenCalled());
   });
 
   it('should have main container', async () => {
-    const { container } = render(<App />);
+    let container;
+    await act(async () => {
+      ({ container } = render(<App />));
+    });
     await waitFor(() => expect(axios.get).toHaveBeenCalled());
     expect(container.firstChild).toBeInTheDocument();
   });
