@@ -236,3 +236,22 @@ variable "nat_ssh_cidr_blocks" {
   type        = list(string)
   default     = null
 }
+
+# Amplify Configuration
+variable "github_repository" {
+  description = "GitHub repository URL for Amplify"
+  type        = string
+  default     = "https://github.com/AbrahamGyamfi/Fashion-App"
+}
+
+variable "github_token" {
+  description = "GitHub personal access token for Amplify"
+  type        = string
+  sensitive   = true
+}
+
+variable "amplify_branch_name" {
+  description = "Git branch for Amplify deployment"
+  type        = string
+  default     = "stage"
+}

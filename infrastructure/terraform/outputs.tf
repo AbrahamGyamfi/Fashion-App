@@ -64,3 +64,18 @@ output "efs_file_system_id" {
   description = "EFS file system ID"
   value       = module.efs.file_system_id
 }
+
+output "amplify_app_id" {
+  description = "Amplify App ID"
+  value       = module.amplify.app_id
+}
+
+output "amplify_default_domain" {
+  description = "Amplify default domain"
+  value       = module.amplify.default_domain
+}
+
+output "amplify_branch_url" {
+  description = "Amplify branch URL"
+  value       = module.amplify.branch_url
+}

@@ -1,0 +1,14 @@
+[
+  {
+    "source": "/api/<*>",
+    "target": "http://shopnow-alb-staging-488276681.us-east-1.elb.amazonaws.com/api/<*>",
+    "status": "200",
+    "condition": null
+  },
+  {
+    "source": "/<*>",
+    "target": "/index.html",
+    "status": "200",
+    "condition": null
+  }
+]

@@ -232,6 +232,20 @@ resource "aws_cloudwatch_log_group" "redis" {
   tags = local.common_tags
 }
 
+# Amplify for Frontend Hosting
+module "amplify" {
+  source = "./modules/amplify"
+
+  project_name      = var.project_name
+  environment       = var.environment
+  github_repository = var.github_repository
+  github_token      = var.github_token
+  branch_name       = var.amplify_branch_name
+  api_url           = "http://${module.alb.alb_dns_name}"
+
+  tags = local.common_tags
+}
+
 # ECR Repository for Backend
 resource "aws_ecr_repository" "backend" {
   name                 = "${var.project_name}-backend"
