@@ -95,7 +95,7 @@ jobs:
 
       - name: Code Quality - SonarCloud (Deep Analysis)
         if: github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/main')
-        uses: SonarSource/sonarcloud-github-action@master
+        uses: SonarSource/sonarcloud-github-action@v3.1.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -109,7 +109,7 @@ jobs:
           echo "**Backend:** Tested ✓" >> $GITHUB_STEP_SUMMARY
           echo "**Frontend:** Tested ✓" >> $GITHUB_STEP_SUMMARY
           echo "**Security:** GitLeaks ✓ | Semgrep ✓" >> $GITHUB_STEP_SUMMARY
-          if [[ "${{ github.event_name }}" == "push" && ("${{ github.ref }}" == "refs/heads/dev" || "${{ github.ref }}" == "refs/heads/stage" || "${{ github.ref }}" == "refs/heads/main") ]]; then
+          if [[ "${{ github.event_name }}" == "push" ]] && { [[ "${{ github.ref }}" == "refs/heads/dev" ]] || [[ "${{ github.ref }}" == "refs/heads/stage" ]] || [[ "${{ github.ref }}" == "refs/heads/main" ]]; }; then
             echo "**Code Quality:** SonarCloud ✓" >> $GITHUB_STEP_SUMMARY
           fi
           echo "**Status:** ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
@@ -154,7 +154,7 @@ jobs:
           docker build -f backend/Dockerfile.prod -t backend:${{ github.sha }} ./backend
 
       - name: Scan Image - Trivy
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.28.0
         with:
           image-ref: backend:${{ github.sha }}
           severity: HIGH,CRITICAL

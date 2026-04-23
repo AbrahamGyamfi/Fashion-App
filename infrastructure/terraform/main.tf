@@ -10,7 +10,7 @@ terraform {
 
   backend "s3" {
     bucket         = "shopnow-terraform-state-abrahamgyamfi"
-    key            = "env/terraform.tfstate"  # Will be overridden by -backend-config
+    key            = "staging/terraform.tfstate"  # Safe default, overridden by workflow -backend-config
     region         = "us-east-1"
     encrypt        = true
     dynamodb_table = "shopnow-terraform-locks"
