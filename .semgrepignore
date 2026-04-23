@@ -1,0 +1,7 @@
+# Semgrep ignore patterns
+# See: https://semgrep.dev/docs/ignoring-files-folders-code/
+
+# Ignore nginx config - false positive for Cache-Control headers
+# Our config sets security headers at server level with 'always' flag (inherited by all locations)
+# Location blocks only add Cache-Control headers, not redefining security headers
+frontend/nginx.conf

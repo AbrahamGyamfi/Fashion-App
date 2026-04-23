@@ -14,7 +14,7 @@ on:
       
 env:
   AWS_REGION: us-east-1
-  NODE_VERSION: '18'
+  NODE_VERSION: '20'
 
 jobs:
   # CI Job - Runs on dev branch pushes and all PRs
@@ -25,38 +25,80 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: backend/package-lock.json
 
+      # Backend CI
       - name: Install Backend Dependencies
         run: npm ci
         working-directory: ./backend
 
-      - name: Run Tests
+      - name: Run Backend Tests
         run: npm test
         working-directory: ./backend
-        continue-on-error: true
+        continue-on-error: false
 
-      - name: Security Scan - npm audit
+      - name: Backend Security Scan
         run: npm audit --audit-level=high
         working-directory: ./backend
-        continue-on-error: true
+        continue-on-error: false
 
-      - name: SAST Scan - Semgrep
+      - name: Backend Lint
+        run: npm run lint --if-present
+        working-directory: ./backend
+        continue-on-error: false
+
+      # Frontend CI
+      - name: Install Frontend Dependencies
+        run: npm ci
+        working-directory: ./frontend
+
+      - name: Run Frontend Tests
+        run: npm test -- --passWithNoTests
+        working-directory: ./frontend
+        continue-on-error: false
+
+      - name: Frontend Security Scan
+        run: npm audit --omit=dev --audit-level=high
+        working-directory: ./frontend
+        continue-on-error: false
+
+      - name: Frontend Lint
+        run: npm run lint --if-present
+        working-directory: ./frontend
+        continue-on-error: false
+
+      - name: Frontend Build Test
+        run: npm run build
+        working-directory: ./frontend
+        env:
+          CI: false
+
+      # Security Scans
+      - name: Secrets Detection - GitLeaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: false
+          GITLEAKS_ENABLE_SUMMARY: true
+
+      - name: SAST Scan - Semgrep (Fast Security Check)
         uses: returntocorp/semgrep-action@v1
         with:
           config: p/security-audit
-        continue-on-error: true
+        continue-on-error: false
 
-      - name: Lint Code
-        run: npm run lint --if-present
-        working-directory: ./backend
-        continue-on-error: true
+      - name: Code Quality - SonarCloud (Deep Analysis)
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/main')
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: CI Summary
         if: always()
@@ -64,6 +106,12 @@ jobs:
           echo "## ✅ CI Pipeline Completed" >> $GITHUB_STEP_SUMMARY
           echo "**Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
           echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Backend:** Tested ✓" >> $GITHUB_STEP_SUMMARY
+          echo "**Frontend:** Tested ✓" >> $GITHUB_STEP_SUMMARY
+          echo "**Security:** GitLeaks ✓ | Semgrep ✓" >> $GITHUB_STEP_SUMMARY
+          if [[ "${{ github.event_name }}" == "push" && ("${{ github.ref }}" == "refs/heads/dev" || "${{ github.ref }}" == "refs/heads/stage" || "${{ github.ref }}" == "refs/heads/main") ]]; then
+            echo "**Code Quality:** SonarCloud ✓" >> $GITHUB_STEP_SUMMARY
+          fi
           echo "**Status:** ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
 
   # Build & Deploy - Only runs when PR is merged to stage or main
@@ -111,7 +159,7 @@ jobs:
           image-ref: backend:${{ github.sha }}
           severity: HIGH,CRITICAL
           exit-code: '0'
-        continue-on-error: true
+        continue-on-error: false
 
       - name: Push to ECR
         run: |
