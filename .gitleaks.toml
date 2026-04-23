@@ -1,0 +1,17 @@
+# GitLeaks Configuration
+# Detects secrets, API keys, passwords, and other sensitive data
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Allowlisted files and patterns"
+
+paths = [
+  '''package-lock\.json''',
+  '''\.semgrepignore''',
+]
+
+regexes = [
+  '''hash123''',
+]

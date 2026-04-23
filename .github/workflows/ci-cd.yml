@@ -25,6 +25,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -78,6 +80,13 @@ jobs:
           CI: false
 
       # Security Scans
+      - name: Secrets Detection - GitLeaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: false
+          GITLEAKS_ENABLE_SUMMARY: true
+
       - name: SAST Scan - Semgrep (Fast Security Check)
         uses: returntocorp/semgrep-action@v1
         with:
@@ -99,7 +108,7 @@ jobs:
           echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
           echo "**Backend:** Tested ✓" >> $GITHUB_STEP_SUMMARY
           echo "**Frontend:** Tested ✓" >> $GITHUB_STEP_SUMMARY
-          echo "**Security:** Semgrep ✓" >> $GITHUB_STEP_SUMMARY
+          echo "**Security:** GitLeaks ✓ | Semgrep ✓" >> $GITHUB_STEP_SUMMARY
           if [[ "${{ github.event_name }}" == "push" && ("${{ github.ref }}" == "refs/heads/dev" || "${{ github.ref }}" == "refs/heads/stage" || "${{ github.ref }}" == "refs/heads/main") ]]; then
             echo "**Code Quality:** SonarCloud ✓" >> $GITHUB_STEP_SUMMARY
           fi

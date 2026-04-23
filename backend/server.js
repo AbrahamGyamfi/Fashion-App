@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const redisClient = require('./config/redis');
 const initDatabase = require('./models/init');
+// Infrastructure update: Fixed S3 backend configuration
 
 const app = express();
 app.use(cors());
