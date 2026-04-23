@@ -1,4 +1,5 @@
-import { render, screen, waitFor, act } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
+import { act } from 'react';  // ← change this line
 import App from '../App';
 import axios from 'axios';
 
@@ -7,12 +8,9 @@ jest.mock('axios');
 
 describe('App Component', () => {
   beforeEach(() => {
-    // Mock localStorage
     Storage.prototype.getItem = jest.fn(() => null);
     Storage.prototype.setItem = jest.fn();
     Storage.prototype.removeItem = jest.fn();
-    
-    // Mock axios to return empty array
     axios.get.mockResolvedValue({ data: [] });
   });
 
