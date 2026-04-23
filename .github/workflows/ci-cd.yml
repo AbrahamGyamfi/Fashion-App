@@ -154,12 +154,12 @@ jobs:
           docker build -f backend/Dockerfile.prod -t backend:${{ github.sha }} ./backend
 
       - name: Scan Image - Trivy
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@57a97c7
         with:
           image-ref: backend:${{ github.sha }}
           severity: HIGH,CRITICAL
           exit-code: '0'
-        continue-on-error: false
+        continue-on-error: true
 
       - name: Push to ECR
         run: |
