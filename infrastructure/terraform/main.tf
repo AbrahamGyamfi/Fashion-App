@@ -9,8 +9,8 @@ terraform {
   }
 
   backend "s3" {
-    bucket         = "shopnow-terraform-state"
-    key            = "production/terraform.tfstate"
+    bucket         = "shopnow-terraform-state-abrahamgyamfi"
+    key            = "env/terraform.tfstate"  # Will be overridden by -backend-config
     region         = "us-east-1"
     encrypt        = true
     dynamodb_table = "shopnow-terraform-locks"

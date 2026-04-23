@@ -59,7 +59,7 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
 
       - name: Terraform Init
-        run: terraform init
+        run: terraform init -backend-config="key=${{ steps.env.outputs.env }}/terraform.tfstate"
         working-directory: ./infrastructure/terraform
 
       - name: Create tfvars File
