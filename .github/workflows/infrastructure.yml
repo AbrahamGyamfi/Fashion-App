@@ -38,12 +38,17 @@ jobs:
       - name: Determine Environment
         id: env
         run: |
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            # PRs always use staging state to avoid locking production
+            echo "env=staging" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "env=${{ github.event.inputs.environment }}" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
             echo "env=production" >> $GITHUB_OUTPUT
           elif [[ "${{ github.ref }}" == "refs/heads/stage" ]]; then
             echo "env=staging" >> $GITHUB_OUTPUT
           else
-            echo "env=${{ github.event.inputs.environment }}" >> $GITHUB_OUTPUT
+            echo "env=staging" >> $GITHUB_OUTPUT
           fi
 
       - name: Configure AWS
@@ -118,7 +123,7 @@ jobs:
           fi
 
       - name: Terraform Init
-        run: terraform init
+        run: terraform init -backend-config="key=${{ steps.env.outputs.env }}/terraform.tfstate"
         working-directory: ./infrastructure/terraform
 
       - name: Create tfvars File
