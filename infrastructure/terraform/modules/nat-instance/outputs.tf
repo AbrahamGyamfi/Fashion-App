@@ -3,6 +3,11 @@ output "nat_instance_id" {
   value       = aws_instance.nat_instance.id
 }
 
+output "nat_network_interface_id" {
+  description = "Primary network interface ID of NAT instance"
+  value       = aws_instance.nat_instance.primary_network_interface_id
+}
+
 output "nat_instance_private_ip" {
   description = "Private IP address of NAT instance"
   value       = aws_instance.nat_instance.private_ip

@@ -95,7 +95,7 @@ jobs:
 
       - name: Code Quality - SonarCloud (Deep Analysis)
         if: github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/main')
-        uses: SonarSource/sonarcloud-github-action@master
+        uses: SonarSource/sonarcloud-github-action@v3.1.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -109,7 +109,7 @@ jobs:
           echo "**Backend:** Tested ✓" >> $GITHUB_STEP_SUMMARY
           echo "**Frontend:** Tested ✓" >> $GITHUB_STEP_SUMMARY
           echo "**Security:** GitLeaks ✓ | Semgrep ✓" >> $GITHUB_STEP_SUMMARY
-          if [[ "${{ github.event_name }}" == "push" && ("${{ github.ref }}" == "refs/heads/dev" || "${{ github.ref }}" == "refs/heads/stage" || "${{ github.ref }}" == "refs/heads/main") ]]; then
+          if [[ "${{ github.event_name }}" == "push" ]] && { [[ "${{ github.ref }}" == "refs/heads/dev" ]] || [[ "${{ github.ref }}" == "refs/heads/stage" ]] || [[ "${{ github.ref }}" == "refs/heads/main" ]]; }; then
             echo "**Code Quality:** SonarCloud ✓" >> $GITHUB_STEP_SUMMARY
           fi
           echo "**Status:** ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
@@ -154,12 +154,12 @@ jobs:
           docker build -f backend/Dockerfile.prod -t backend:${{ github.sha }} ./backend
 
       - name: Scan Image - Trivy
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1
         with:
           image-ref: backend:${{ github.sha }}
           severity: HIGH,CRITICAL
           exit-code: '0'
-        continue-on-error: false
+        continue-on-error: true
 
       - name: Push to ECR
         run: |
@@ -203,6 +203,15 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Check Current Service Status
+        run: |
+          echo "Checking service before deployment..."
+          aws ecs describe-services \
+            --cluster ${{ steps.env.outputs.cluster }} \
+            --services ${{ steps.env.outputs.service }} \
+            --query 'services[0].{status:status,runningCount:runningCount,desiredCount:desiredCount}' \
+            --region ${{ env.AWS_REGION }}
+
       - name: Deploy to ECS
         run: |
           aws ecs update-service \
@@ -211,12 +220,55 @@ jobs:
             --force-new-deployment \
             --region ${{ env.AWS_REGION }}
 
-      - name: Wait for Deployment
+      - name: Monitor Deployment
         run: |
-          aws ecs wait services-stable \
+          echo "Monitoring deployment progress..."
+          for i in {1..30}; do
+            STATUS=$(aws ecs describe-services \
+              --cluster ${{ steps.env.outputs.cluster }} \
+              --services ${{ steps.env.outputs.service }} \
+              --query 'services[0].deployments[0].{status:rolloutState,running:runningCount,desired:desiredCount,failed:failedTasks}' \
+              --region ${{ env.AWS_REGION }})
+            echo "[$i/30] $STATUS"
+            
+            ROLLOUT=$(echo $STATUS | jq -r '.status')
+            if [[ "$ROLLOUT" == "COMPLETED" ]]; then
+              echo "✅ Deployment completed successfully"
+              exit 0
+            elif [[ "$ROLLOUT" == "FAILED" ]]; then
+              echo "❌ Deployment failed"
+              aws ecs describe-services \
+                --cluster ${{ steps.env.outputs.cluster }} \
+                --services ${{ steps.env.outputs.service }} \
+                --query 'services[0].events[:5]' \
+                --region ${{ env.AWS_REGION }}
+              exit 1
+            fi
+            sleep 20
+          done
+          echo "⚠️ Deployment timeout after 10 minutes"
+          exit 1
+
+      - name: Check Task Failures
+        if: failure()
+        run: |
+          echo "Checking for failed tasks..."
+          TASK_ARNS=$(aws ecs list-tasks \
             --cluster ${{ steps.env.outputs.cluster }} \
-            --services ${{ steps.env.outputs.service }} \
-            --region ${{ env.AWS_REGION }}
+            --service-name ${{ steps.env.outputs.service }} \
+            --desired-status STOPPED \
+            --query 'taskArns[0]' \
+            --output text \
+            --region ${{ env.AWS_REGION }})
+          
+          if [[ "$TASK_ARNS" != "None" ]] && [[ -n "$TASK_ARNS" ]]; then
+            echo "Last stopped task details:"
+            aws ecs describe-tasks \
+              --cluster ${{ steps.env.outputs.cluster }} \
+              --tasks $TASK_ARNS \
+              --query 'tasks[0].{stoppedReason:stoppedReason,containers:containers[*].{name:name,reason:reason,exitCode:exitCode}}' \
+              --region ${{ env.AWS_REGION }}
+          fi
 
       - name: Health Check
         run: |

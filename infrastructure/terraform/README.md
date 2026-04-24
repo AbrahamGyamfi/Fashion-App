@@ -1,0 +1,47 @@
+# Terraform Infrastructure
+
+## State Management
+
+This project uses S3 backend with environment-specific state files:
+- `staging/terraform.tfstate` - Staging environment
+- `production/terraform.tfstate` - Production environment
+
+### Running Terraform Locally
+
+**⚠️ IMPORTANT: Always specify the environment when running locally**
+
+```bash
+# For staging (safe default)
+terraform init
+terraform plan
+
+# For production (use with caution)
+terraform init -backend-config="key=production/terraform.tfstate"
+terraform plan
+```
+
+**Default behavior:** If you run `terraform init` without `-backend-config`, it defaults to **staging** state to prevent accidental production changes.
+
+### CI/CD Workflow
+
+The GitHub Actions workflow automatically selects the correct state file:
+- PRs → Always use staging state (read-only validation)
+- Push to `stage` branch → Uses staging state
+- Push to `main` branch → Uses production state
+- Manual workflow → Select environment via dropdown
+
+### State File Protection
+
+- **Staging state**: Safe for testing and development
+- **Production state**: Protected, only accessible via:
+  - Direct push to `main` branch
+  - Manual workflow dispatch with production selected
+  - Local terraform with explicit `-backend-config`
+
+### Best Practices
+
+1. **Never run terraform locally against production** unless absolutely necessary
+2. **Always use PRs** for infrastructure changes
+3. **Test in staging first** before promoting to production
+4. **Use workflow_dispatch** for production deployments
+5. **Keep state files in sync** - don't manually edit S3 state files

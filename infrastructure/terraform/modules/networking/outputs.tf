@@ -13,6 +13,16 @@ output "private_subnet_ids" {
   value       = aws_subnet.private[*].id
 }
 
+output "private_route_table_ids" {
+  description = "List of private route table IDs"
+  value       = aws_route_table.private[*].id
+}
+
+output "private_route_table_id" {
+  description = "First private route table ID (for single AZ setup)"
+  value       = aws_route_table.private[0].id
+}
+
 output "nat_gateway_ids" {
   description = "List of NAT Gateway IDs"
   value       = aws_nat_gateway.main[*].id

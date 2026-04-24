@@ -28,18 +28,6 @@ output "ecr_repository_url" {
   value       = aws_ecr_repository.backend.repository_url
 }
 
-output "rds_endpoint" {
-  description = "RDS endpoint"
-  value       = module.rds.db_endpoint
-  sensitive   = true
-}
-
-output "redis_endpoint" {
-  description = "Redis endpoint"
-  value       = module.elasticache.redis_endpoint
-  sensitive   = true
-}
-
 output "database_secret_arn" {
   description = "Database secrets ARN"
   value       = module.secrets.database_secret_arn
@@ -52,7 +40,42 @@ output "redis_secret_arn" {
   sensitive   = true
 }
 
-output "cloudwatch_log_group" {
-  description = "CloudWatch log group name"
-  value       = aws_cloudwatch_log_group.ecs.name
+output "backend_log_group" {
+  description = "Backend CloudWatch log group name"
+  value       = aws_cloudwatch_log_group.backend.name
+}
+
+output "postgres_log_group" {
+  description = "PostgreSQL CloudWatch log group name"
+  value       = aws_cloudwatch_log_group.postgres.name
+}
+
+output "redis_log_group" {
+  description = "Redis CloudWatch log group name"
+  value       = aws_cloudwatch_log_group.redis.name
+}
+
+output "nat_instance_public_ip" {
+  description = "NAT instance public IP"
+  value       = module.nat_instance.nat_instance_public_ip
+}
+
+output "efs_file_system_id" {
+  description = "EFS file system ID"
+  value       = module.efs.file_system_id
+}
+
+output "amplify_app_id" {
+  description = "Amplify App ID"
+  value       = module.amplify.app_id
+}
+
+output "amplify_default_domain" {
+  description = "Amplify default domain"
+  value       = module.amplify.default_domain
+}
+
+output "amplify_branch_url" {
+  description = "Amplify branch URL"
+  value       = module.amplify.branch_url
 }

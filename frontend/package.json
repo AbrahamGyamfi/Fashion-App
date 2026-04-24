@@ -1,6 +1,6 @@
 {
   "name": "shopnow-frontend",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "dependencies": {
     "axios": "^1.6.0",
@@ -28,7 +28,7 @@
     "postcss": "^8.4.31",
     "serialize-javascript": "^6.0.2",
     "underscore": "^1.13.8",
-    "webpack-dev-server": "^5.2.1",
+    "webpack-dev-server": "^4.15.2",
     "yaml": "^2.8.3"
   },
   "eslintConfig": {
@@ -48,5 +48,6 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:3000"
+  "proxy": "http://localhost:3000",
+  "homepage": "."
 }

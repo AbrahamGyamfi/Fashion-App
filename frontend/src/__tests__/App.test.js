@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
+import { act } from 'react';  // ← change this line
 import App from '../App';
 import axios from 'axios';
 
@@ -7,12 +8,9 @@ jest.mock('axios');
 
 describe('App Component', () => {
   beforeEach(() => {
-    // Mock localStorage
     Storage.prototype.getItem = jest.fn(() => null);
     Storage.prototype.setItem = jest.fn();
     Storage.prototype.removeItem = jest.fn();
-    
-    // Mock axios to return empty array
     axios.get.mockResolvedValue({ data: [] });
   });
 
@@ -21,12 +19,17 @@ describe('App Component', () => {
   });
 
   it('renders without crashing', async () => {
-    render(<App />);
+    await act(async () => {
+      render(<App />);
+    });
     await waitFor(() => expect(axios.get).toHaveBeenCalled());
   });
 
   it('should have main container', async () => {
-    const { container } = render(<App />);
+    let container;
+    await act(async () => {
+      ({ container } = render(<App />));
+    });
     await waitFor(() => expect(axios.get).toHaveBeenCalled());
     expect(container.firstChild).toBeInTheDocument();
   });

@@ -37,6 +37,11 @@ session_secret = "REPLACE_WITH_SECRET"
 # SSL Certificate
 acm_certificate_arn = "arn:aws:acm:us-east-1:ACCOUNT_ID:certificate/CERTIFICATE_ID"
 
+# Amplify Configuration
+github_repository    = "https://github.com/AbrahamGyamfi/Fashion-App"
+github_token         = "REPLACE_WITH_GITHUB_TOKEN"
+amplify_branch_name  = "stage"
+
 # Additional Tags
 tags = {
   CostCenter = "Engineering"

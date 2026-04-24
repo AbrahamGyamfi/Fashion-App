@@ -1,11 +1,11 @@
-# Data source for latest Amazon Linux 2023 ARM AMI
-data "aws_ami" "amazon_linux_2023_arm" {
+# Data source for latest Amazon Linux 2023 x86_64 AMI
+data "aws_ami" "amazon_linux_2023" {
   most_recent = true
   owners      = ["amazon"]
 
   filter {
     name   = "name"
-    values = ["al2023-ami-*-arm64"]
+    values = ["al2023-ami-*-x86_64"]
   }
 
   filter {
@@ -15,7 +15,7 @@ data "aws_ami" "amazon_linux_2023_arm" {
 
   filter {
     name   = "architecture"
-    values = ["arm64"]
+    values = ["x86_64"]
   }
 }
 
@@ -191,41 +191,41 @@ locals {
 
 # NAT Instance
 resource "aws_instance" "nat_instance" {
-  ami                    = data.aws_ami.amazon_linux_2023_arm.id
+  ami                    = data.aws_ami.amazon_linux_2023.id
   instance_type          = var.instance_type
   subnet_id              = var.public_subnet_id
   vpc_security_group_ids = [aws_security_group.nat_instance.id]
   iam_instance_profile   = aws_iam_instance_profile.nat_instance.name
-  
+
   # Disable source/destination check (required for NAT)
   source_dest_check = false
-  
+
   user_data = local.user_data
-  
+
   # Enable detailed monitoring
   monitoring = true
-  
-  # Use EBS-optimized
-  ebs_optimized = true
-  
+
+  # Use EBS-optimized (not available for t2.micro)
+  ebs_optimized = false
+
   root_block_device {
     volume_type           = "gp3"
-    volume_size           = 8
+    volume_size           = 30
     delete_on_termination = true
     encrypted             = true
   }
-  
+
   metadata_options {
     http_endpoint               = "enabled"
     http_tokens                 = "required"
     http_put_response_hop_limit = 1
   }
-  
+
   tags = merge(var.tags, {
     Name = "${var.project_name}-nat-instance-${var.environment}"
     Role = "NAT"
   })
-  
+
   lifecycle {
     create_before_destroy = true
   }
@@ -248,11 +248,11 @@ resource "aws_cloudwatch_metric_alarm" "nat_cpu" {
   statistic           = "Average"
   threshold           = "80"
   alarm_description   = "NAT instance CPU utilization is too high"
-  
+
   dimensions = {
     InstanceId = aws_instance.nat_instance.id
   }
-  
+
   tags = var.tags
 }
 
@@ -268,11 +268,11 @@ resource "aws_cloudwatch_metric_alarm" "nat_status_check" {
   threshold           = "0"
   alarm_description   = "Auto-recover NAT instance on system status check failure"
   alarm_actions       = ["arn:aws:automate:${data.aws_region.current.name}:ec2:recover"]
-  
+
   dimensions = {
     InstanceId = aws_instance.nat_instance.id
   }
-  
+
   tags = var.tags
 }
 
@@ -287,11 +287,11 @@ resource "aws_cloudwatch_metric_alarm" "nat_network" {
   statistic           = "Average"
   threshold           = "1000000"
   alarm_description   = "NAT instance network traffic is unusually high"
-  
+
   dimensions = {
     InstanceId = aws_instance.nat_instance.id
   }
-  
+
   tags = var.tags
 }
 
