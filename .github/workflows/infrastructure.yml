@@ -20,7 +20,11 @@ on:
         description: 'Action'
         required: true
         type: choice
-        options: [plan, apply, destroy]
+        options: [plan, apply, destroy, unlock]
+      lock_id:
+        description: 'Lock ID (for unlock action)'
+        required: false
+        type: string
 
 env:
   AWS_REGION: us-east-1
@@ -123,10 +127,19 @@ jobs:
           fi
 
       - name: Terraform Init
+        if: github.event.inputs.action != 'unlock'
         run: terraform init -backend-config="key=${{ steps.env.outputs.env }}/terraform.tfstate"
         working-directory: ./infrastructure/terraform
 
+      - name: Terraform Force Unlock
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'unlock'
+        run: |
+          terraform init -backend-config="key=${{ steps.env.outputs.env }}/terraform.tfstate"
+          terraform force-unlock -force ${{ github.event.inputs.lock_id }}
+        working-directory: ./infrastructure/terraform
+
       - name: Create tfvars File
+        if: github.event.inputs.action != 'unlock'
         run: |
           cat > ${{ steps.env.outputs.env }}.tfvars << 'EOF'
           environment = "${{ steps.env.outputs.env }}"
