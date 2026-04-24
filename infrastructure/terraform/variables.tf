@@ -222,7 +222,7 @@ variable "redis_image" {
 variable "nat_instance_type" {
   description = "EC2 instance type for NAT instance"
   type        = string
-  default     = "t3.micro"
+  default     = "t3.small"
 }
 
 variable "enable_nat_ssh" {
