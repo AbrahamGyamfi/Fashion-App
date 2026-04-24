@@ -6,25 +6,8 @@ resource "aws_amplify_app" "frontend" {
 
   access_token = var.github_token
 
-  build_spec = <<-EOT
-    version: 1
-    frontend:
-      phases:
-        preBuild:
-          commands:
-            - cd frontend
-            - npm ci
-        build:
-          commands:
-            - npm run build
-      artifacts:
-        baseDirectory: frontend/build
-        files:
-          - '**/*'
-      cache:
-        paths:
-          - frontend/node_modules/**/*
-  EOT
+  # Use amplify.yml from repository instead of inline build_spec
+  # build_spec is commented out to use the file in the repo
 
   environment_variables = {
     REACT_APP_API_URL = var.api_url
