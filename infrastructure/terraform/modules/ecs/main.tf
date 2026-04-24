@@ -160,6 +160,11 @@ resource "aws_ecs_service" "main" {
     container_port   = var.container_port
   }
 
+  deployment_configuration {
+    minimum_healthy_percent = 50
+    maximum_percent         = 200
+  }
+
   tags = var.tags
 
   lifecycle {

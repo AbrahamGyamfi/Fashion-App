@@ -203,6 +203,15 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Check Current Service Status
+        run: |
+          echo "Checking service before deployment..."
+          aws ecs describe-services \
+            --cluster ${{ steps.env.outputs.cluster }} \
+            --services ${{ steps.env.outputs.service }} \
+            --query 'services[0].{status:status,runningCount:runningCount,desiredCount:desiredCount}' \
+            --region ${{ env.AWS_REGION }}
+
       - name: Deploy to ECS
         run: |
           aws ecs update-service \
@@ -211,12 +220,55 @@ jobs:
             --force-new-deployment \
             --region ${{ env.AWS_REGION }}
 
-      - name: Wait for Deployment
+      - name: Monitor Deployment
         run: |
-          aws ecs wait services-stable \
+          echo "Monitoring deployment progress..."
+          for i in {1..30}; do
+            STATUS=$(aws ecs describe-services \
+              --cluster ${{ steps.env.outputs.cluster }} \
+              --services ${{ steps.env.outputs.service }} \
+              --query 'services[0].deployments[0].{status:rolloutState,running:runningCount,desired:desiredCount,failed:failedTasks}' \
+              --region ${{ env.AWS_REGION }})
+            echo "[$i/30] $STATUS"
+            
+            ROLLOUT=$(echo $STATUS | jq -r '.status')
+            if [[ "$ROLLOUT" == "COMPLETED" ]]; then
+              echo "✅ Deployment completed successfully"
+              exit 0
+            elif [[ "$ROLLOUT" == "FAILED" ]]; then
+              echo "❌ Deployment failed"
+              aws ecs describe-services \
+                --cluster ${{ steps.env.outputs.cluster }} \
+                --services ${{ steps.env.outputs.service }} \
+                --query 'services[0].events[:5]' \
+                --region ${{ env.AWS_REGION }}
+              exit 1
+            fi
+            sleep 20
+          done
+          echo "⚠️ Deployment timeout after 10 minutes"
+          exit 1
+
+      - name: Check Task Failures
+        if: failure()
+        run: |
+          echo "Checking for failed tasks..."
+          TASK_ARNS=$(aws ecs list-tasks \
             --cluster ${{ steps.env.outputs.cluster }} \
-            --services ${{ steps.env.outputs.service }} \
-            --region ${{ env.AWS_REGION }}
+            --service-name ${{ steps.env.outputs.service }} \
+            --desired-status STOPPED \
+            --query 'taskArns[0]' \
+            --output text \
+            --region ${{ env.AWS_REGION }})
+          
+          if [[ "$TASK_ARNS" != "None" ]] && [[ -n "$TASK_ARNS" ]]; then
+            echo "Last stopped task details:"
+            aws ecs describe-tasks \
+              --cluster ${{ steps.env.outputs.cluster }} \
+              --tasks $TASK_ARNS \
+              --query 'tasks[0].{stoppedReason:stoppedReason,containers:containers[*].{name:name,reason:reason,exitCode:exitCode}}' \
+              --region ${{ env.AWS_REGION }}
+          fi
 
       - name: Health Check
         run: |
