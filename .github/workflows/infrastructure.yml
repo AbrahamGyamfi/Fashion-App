@@ -182,6 +182,7 @@ jobs:
           TF_VAR_redis_password: ${{ steps.env.outputs.env == 'production' && secrets.PROD_REDIS_PASSWORD || secrets.STAGE_REDIS_PASSWORD }}
           TF_VAR_jwt_secret: ${{ steps.env.outputs.env == 'production' && secrets.PROD_JWT_SECRET || secrets.STAGE_JWT_SECRET }}
           TF_VAR_session_secret: ${{ steps.env.outputs.env == 'production' && secrets.PROD_SESSION_SECRET || secrets.STAGE_SESSION_SECRET }}
+          TF_VAR_github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Terraform Apply
         if: (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/stage')) || (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'apply')
@@ -197,6 +198,7 @@ jobs:
           TF_VAR_redis_password: ${{ steps.env.outputs.env == 'production' && secrets.PROD_REDIS_PASSWORD || secrets.STAGE_REDIS_PASSWORD }}
           TF_VAR_jwt_secret: ${{ steps.env.outputs.env == 'production' && secrets.PROD_JWT_SECRET || secrets.STAGE_JWT_SECRET }}
           TF_VAR_session_secret: ${{ steps.env.outputs.env == 'production' && secrets.PROD_SESSION_SECRET || secrets.STAGE_SESSION_SECRET }}
+          TF_VAR_github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Summary
         if: always()
