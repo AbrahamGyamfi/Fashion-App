@@ -1,6 +1,8 @@
 resource "aws_amplify_app" "frontend" {
   name       = "${var.project_name}-frontend-${var.environment}"
-  repository = var.github_repository
+  repository = "https://github.com/${var.github_repository}"
+  
+  platform = "WEB"
 
   access_token = var.github_token
 
@@ -29,12 +31,6 @@ resource "aws_amplify_app" "frontend" {
   }
 
   custom_rule {
-    source = "/api/<*>"
-    target = "${var.api_url}/api/<*>"
-    status = "200"
-  }
-
-  custom_rule {
     source = "/<*>"
     target = "/index.html"
     status = "200"
@@ -48,6 +44,9 @@ resource "aws_amplify_branch" "main" {
   branch_name = var.branch_name
 
   enable_auto_build = true
+  
+  # Only trigger builds when frontend files change
+  enable_pull_request_preview = false
 
   environment_variables = {
     REACT_APP_API_URL = var.api_url
