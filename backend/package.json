@@ -1,6 +1,6 @@
 {
   "name": "api-gateway",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "api-gateway.js",
   "scripts": {
     "start": "nodemon server.js",
