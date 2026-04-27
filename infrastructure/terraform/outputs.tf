@@ -55,11 +55,6 @@ output "redis_log_group" {
   value       = aws_cloudwatch_log_group.redis.name
 }
 
-output "nat_instance_public_ip" {
-  description = "NAT instance public IP"
-  value       = module.nat_instance.nat_instance_public_ip
-}
-
 output "efs_file_system_id" {
   description = "EFS file system ID"
   value       = module.efs.file_system_id
