@@ -74,28 +74,7 @@ module "networking" {
   tags = local.common_tags
 }
 
-# NAT Instance (replaces NAT Gateway)
-module "nat_instance" {
-  source = "./modules/nat-instance"
-
-  project_name        = var.project_name
-  environment         = var.environment
-  vpc_id              = module.networking.vpc_id
-  public_subnet_id    = module.networking.public_subnet_ids[0]
-  private_subnet_cidr = cidrsubnet(var.vpc_cidr, 8, 10)
-  instance_type       = var.nat_instance_type
-  enable_ssh_access   = var.enable_nat_ssh
-  ssh_cidr_blocks     = var.nat_ssh_cidr_blocks
-
-  tags = local.common_tags
-}
-
-# Update private route table with NAT instance
-resource "aws_route" "private_nat" {
-  route_table_id         = module.networking.private_route_table_id
-  destination_cidr_block = "0.0.0.0/0"
-  network_interface_id   = module.nat_instance.nat_network_interface_id
-}
+# NAT Instance removed - ECS now runs in public subnet with direct internet access
 
 # EFS for PostgreSQL and Redis data persistence
 module "efs" {
@@ -104,7 +83,7 @@ module "efs" {
   environment        = var.environment
   vpc_id             = module.networking.vpc_id
   vpc_cidr           = var.vpc_cidr
-  private_subnet_ids = module.networking.private_subnet_ids
+  private_subnet_ids = module.networking.public_subnet_ids
 
   tags = local.common_tags
 }
@@ -164,7 +143,7 @@ module "ecs" {
   environment  = var.environment
 
   vpc_id             = module.networking.vpc_id
-  private_subnet_ids = module.networking.private_subnet_ids
+  public_subnet_ids  = module.networking.public_subnet_ids
 
   alb_target_group_arn  = module.alb.target_group_arn
   alb_security_group_id = module.alb.security_group_id
