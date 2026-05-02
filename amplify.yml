@@ -3,14 +3,14 @@ frontend:
   phases:
     preBuild:
       commands:
-        - npm ci --prefix frontend
+        - npm ci --prefix Fashion_App_Frontend
     build:
       commands:
-        - npm run build --prefix frontend
+        - npm run build --prefix Fashion_App_Frontend
   artifacts:
-    baseDirectory: frontend/build
+    baseDirectory: Fashion_App_Frontend/build
     files:
       - '**/*'
   cache:
     paths:
-      - frontend/node_modules/**/*
+      - Fashion_App_Frontend/node_modules/**/*
