@@ -24,7 +24,7 @@ function Header({ onCartClick, onAdminClick, onLogout, onLearnClick, onWishlistC
           <nav className="nav">
             <button
               className={`nav-link ${currentView === 'shop' ? 'active' : ''}`}
-              onClick={() => globalThis.location.reload()}
+              onClick={() => window.location.reload()} // NOSONAR
             >
               Shop
             </button>

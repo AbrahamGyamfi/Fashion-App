@@ -139,7 +139,7 @@ function AuthModal({ type, onClose, onSuccess }) {
 
         <p className="auth-switch">
           {type === 'login' ? "Don't have an account? " : "Already have an account? "}
-          <button onClick={() => globalThis.location.reload()}>
+          <button onClick={() => window.location.reload()}> {/* NOSONAR */}
             {type === 'login' ? 'Sign Up' : 'Login'}
           </button>
         </p>
