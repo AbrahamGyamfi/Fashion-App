@@ -4,7 +4,21 @@ const redisClient = require('./config/redis');
 const initDatabase = require('./models/init');
 
 const app = express();
-app.use(cors());
+
+const allowedOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(',')
+  : ['http://localhost:3000', 'http://localhost:8080'];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (health checks, server-to-server)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    callback(new Error(`CORS: origin ${origin} not allowed`));
+  },
+  credentials: true,
+}));
+
 app.use(express.json());
 
 // Routes
