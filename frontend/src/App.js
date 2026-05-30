@@ -127,7 +127,7 @@ function App() {
     });
   };
 
-  const cartTotal = cart.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
+  const cartTotal = cart.reduce((sum, item) => sum + (Number.parseFloat(item.price) * item.quantity), 0);
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const handleCollectionSelect = (culture) => {

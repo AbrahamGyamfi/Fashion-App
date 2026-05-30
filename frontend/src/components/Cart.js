@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import './Cart.css';
 
 const FREE_SHIPPING_THRESHOLD = 100;
@@ -9,8 +10,8 @@ function Cart({ items, onClose, onUpdateQuantity, onRemove, total }) {
   const itemCount = items.reduce((s, i) => s + i.quantity, 0);
 
   return (
-    <div className="cart-overlay" onClick={onClose}>
-      <div className="cart-panel" onClick={(e) => e.stopPropagation()}>
+    <div className="cart-overlay" onClick={onClose} role="presentation" onKeyDown={(e) => e.key === 'Escape' && onClose()}>
+      <div className="cart-panel" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label="Shopping cart">
 
         <div className="cart-header">
           <div className="cart-header-left">
@@ -94,9 +95,9 @@ function Cart({ items, onClose, onUpdateQuantity, onRemove, total }) {
                   </div>
                 </div>
                 <div className="item-price-col">
-                  <span className="item-total">${(parseFloat(item.price) * item.quantity).toFixed(2)}</span>
+                  <span className="item-total">${(Number.parseFloat(item.price) * item.quantity).toFixed(2)}</span>
                   {item.quantity > 1 && (
-                    <span className="item-unit-price">${parseFloat(item.price).toFixed(2)} each</span>
+                    <span className="item-unit-price">${Number.parseFloat(item.price).toFixed(2)} each</span>
                   )}
                 </div>
               </div>
@@ -134,5 +135,22 @@ function Cart({ items, onClose, onUpdateQuantity, onRemove, total }) {
     </div>
   );
 }
+
+Cart.propTypes = {
+  items: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.number,
+    name: PropTypes.string,
+    price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    quantity: PropTypes.number,
+    image_url: PropTypes.string,
+    brand_name: PropTypes.string,
+    size: PropTypes.string,
+    color: PropTypes.string,
+  })).isRequired,
+  onClose: PropTypes.func.isRequired,
+  onUpdateQuantity: PropTypes.func.isRequired,
+  onRemove: PropTypes.func.isRequired,
+  total: PropTypes.number.isRequired,
+};
 
 export default Cart;

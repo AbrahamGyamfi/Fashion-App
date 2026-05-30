@@ -1,9 +1,15 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import './ProductCard.css';
 
 const StarRating = ({ rating, count }) => {
   const full = Math.floor(rating);
   const half = rating - full >= 0.5;
+  const starFill = (i) => {
+    if (i <= full) return '#f59e0b';
+    if (i === full + 1 && half) return '#f59e0b';
+    return '#e5e7eb';
+  };
   return (
     <div className="product-rating">
       <div className="stars-svg">
@@ -11,7 +17,7 @@ const StarRating = ({ rating, count }) => {
           <svg key={i} width="13" height="13" viewBox="0 0 14 14" fill="none">
             <path
               d="M7 1L8.545 5.09H13L9.545 7.6L10.91 12L7 9.27L3.09 12L4.455 7.6L1 5.09H5.455L7 1Z"
-              fill={i <= full ? '#f59e0b' : (i === full + 1 && half ? '#f59e0b' : '#e5e7eb')}
+              fill={starFill(i)}
               stroke={i <= full || (i === full + 1 && half) ? '#f59e0b' : '#d1d5db'}
               strokeWidth="0.5"
             />
@@ -117,7 +123,7 @@ function ProductCard({ product, onAddToCart, isWishlisted, onToggleWishlist }) {
 
         <div className="product-footer">
           <div className="price-block">
-            <span className="product-price">${parseFloat(product.price).toFixed(2)}</span>
+            <span className="product-price">${Number.parseFloat(product.price).toFixed(2)}</span>
             {product.rating > 0 && <StarRating rating={product.rating} count={product.review_count} />}
           </div>
         </div>
@@ -133,5 +139,27 @@ function ProductCard({ product, onAddToCart, isWishlisted, onToggleWishlist }) {
     </div>
   );
 }
+
+ProductCard.propTypes = {
+  product: PropTypes.shape({
+    id: PropTypes.number,
+    name: PropTypes.string,
+    price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    image_url: PropTypes.string,
+    stock: PropTypes.number,
+    category: PropTypes.string,
+    culture_category: PropTypes.string,
+    color: PropTypes.string,
+    size: PropTypes.string,
+    featured: PropTypes.bool,
+    brand_name: PropTypes.string,
+    verified: PropTypes.bool,
+    rating: PropTypes.number,
+    review_count: PropTypes.number,
+  }).isRequired,
+  onAddToCart: PropTypes.func.isRequired,
+  isWishlisted: PropTypes.bool,
+  onToggleWishlist: PropTypes.func,
+};
 
 export default ProductCard;

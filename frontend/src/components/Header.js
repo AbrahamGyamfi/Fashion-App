@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import './Header.css';
 
 function Header({ onCartClick, onAdminClick, onLogout, onLearnClick, onWishlistClick, user, cartCount, wishlistCount, currentView }) {
@@ -23,7 +24,7 @@ function Header({ onCartClick, onAdminClick, onLogout, onLearnClick, onWishlistC
           <nav className="nav">
             <button
               className={`nav-link ${currentView === 'shop' ? 'active' : ''}`}
-              onClick={() => window.location.reload()}
+              onClick={() => globalThis.location.reload()}
             >
               Shop
             </button>
@@ -67,5 +68,21 @@ function Header({ onCartClick, onAdminClick, onLogout, onLearnClick, onWishlistC
     </header>
   );
 }
+
+Header.propTypes = {
+  onCartClick: PropTypes.func.isRequired,
+  onAdminClick: PropTypes.func.isRequired,
+  onLogout: PropTypes.func.isRequired,
+  onLearnClick: PropTypes.func.isRequired,
+  onWishlistClick: PropTypes.func,
+  user: PropTypes.shape({
+    email: PropTypes.string,
+    first_name: PropTypes.string,
+    user_type: PropTypes.string,
+  }).isRequired,
+  cartCount: PropTypes.number,
+  wishlistCount: PropTypes.number,
+  currentView: PropTypes.string,
+};
 
 export default Header;

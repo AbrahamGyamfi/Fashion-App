@@ -11,7 +11,7 @@ async function initDatabase() {
     `);
     
     const expectedTables = 9;
-    const actualTables = parseInt(tableCheck.rows[0].table_count);
+    const actualTables = Number.parseInt(tableCheck.rows[0].table_count, 10);
     
     if (actualTables === expectedTables) {
       console.log(`✓ Database already initialized (${actualTables}/${expectedTables} tables)`);
@@ -22,7 +22,7 @@ async function initDatabase() {
       console.log('Database not initialized, creating tables...');
     }
   } catch (err) {
-    console.log('Database check failed, initializing...');
+    console.log('Database check failed, initializing...', err.message);
   }
 
   // Drop all tables to ensure clean state

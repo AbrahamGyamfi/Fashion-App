@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import './LandingPage.css';
 
 const STATS = [
@@ -193,5 +194,10 @@ function LandingPage({ onLogin, onRegister }) {
     </div>
   );
 }
+
+LandingPage.propTypes = {
+  onLogin: PropTypes.func.isRequired,
+  onRegister: PropTypes.func.isRequired,
+};
 
 export default LandingPage;
