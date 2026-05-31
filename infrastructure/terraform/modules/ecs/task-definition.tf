@@ -16,7 +16,10 @@ locals {
         { name = "NODE_ENV", value = var.environment },
         { name = "PORT", value = tostring(var.container_port) },
         { name = "AWS_REGION", value = data.aws_region.current.name },
-        { name = "DATABASE_URL", value = "postgresql://${var.db_host}:${var.db_port}/${var.db_name}" },
+        { name = "DB_HOST", value = var.db_host },
+        { name = "DB_PORT", value = tostring(var.db_port) },
+        { name = "DB_NAME", value = var.db_name },
+        { name = "DB_USER", value = var.db_username },
         { name = "REDIS_URL", value = "redis://${var.redis_host}:${var.redis_port}" }
       ]
 
@@ -69,11 +72,11 @@ locals {
         { name = "POSTGRES_PASSWORD", valueFrom = "${var.secrets_arns.database}:password::" }
       ]
 
-      mountPoints = [{
-        sourceVolume  = "postgres-data"
-        containerPath = "/var/lib/postgresql/data"
-        readOnly      = false
-      }]
+      # mountPoints = [{
+      #   sourceVolume  = "postgres-data"
+      #   containerPath = "/var/lib/postgresql/data"
+      #   readOnly      = false
+      # }]
 
       logConfiguration = {
         logDriver = "awslogs"
@@ -105,11 +108,11 @@ locals {
 
       command = ["redis-server", "--appendonly", "yes", "--dir", var.redis_data_dir]
 
-      mountPoints = [{
-        sourceVolume  = "redis-data"
-        containerPath = var.redis_data_dir
-        readOnly      = false
-      }]
+      # mountPoints = [{
+      #   sourceVolume  = "redis-data"
+      #   containerPath = var.redis_data_dir
+      #   readOnly      = false
+      # }]
 
       logConfiguration = {
         logDriver = "awslogs"
@@ -141,25 +144,25 @@ resource "aws_ecs_task_definition" "main" {
   execution_role_arn       = aws_iam_role.ecs_task_execution.arn
   task_role_arn            = aws_iam_role.ecs_task.arn
 
-  # EFS volume for PostgreSQL data
-  volume {
-    name = "postgres-data"
-    efs_volume_configuration {
-      file_system_id     = var.efs_file_system_id
-      root_directory     = "/postgres"
-      transit_encryption = "ENABLED"
-    }
-  }
+  # EFS volume for PostgreSQL data (disabled for public subnet deployment)
+  # volume {
+  #   name = "postgres-data"
+  #   efs_volume_configuration {
+  #     file_system_id     = var.efs_file_system_id
+  #     root_directory     = "/postgres"
+  #     transit_encryption = "ENABLED"
+  #   }
+  # }
 
-  # EFS volume for Redis data
-  volume {
-    name = "redis-data"
-    efs_volume_configuration {
-      file_system_id     = var.efs_file_system_id
-      root_directory     = "/redis"
-      transit_encryption = "ENABLED"
-    }
-  }
+  # EFS volume for Redis data (disabled for public subnet deployment)
+  # volume {
+  #   name = "redis-data"
+  #   efs_volume_configuration {
+  #     file_system_id     = var.efs_file_system_id
+  #     root_directory     = "/redis"
+  #     transit_encryption = "ENABLED"
+  #   }
+  # }
 
   container_definitions = jsonencode(local.container_definitions)
 
