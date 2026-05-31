@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import './AddProductModal.css';
 
 function AddProductModal({ onClose, onSubmit }) {
@@ -32,8 +33,8 @@ function AddProductModal({ onClose, onSubmit }) {
     }
     onSubmit({
       name: formData.name,
-      price: parseFloat(formData.price),
-      stock: parseInt(formData.stock),
+      price: Number.parseFloat(formData.price),
+      stock: Number.parseInt(formData.stock, 10),
       category: formData.category || null,
       size: formData.size || null,
       color: formData.color || null,
@@ -47,13 +48,13 @@ function AddProductModal({ onClose, onSubmit }) {
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
+    <div className="modal-overlay" onClick={onClose} role="presentation" onKeyDown={(e) => e.key === 'Escape' && onClose()}>
+      <div className="modal" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label="Add new product">
         <div className="modal-header">
           <h2>Add New Fashion Product</h2>
           <button className="close-btn" onClick={onClose}>×</button>
         </div>
-        
+
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="name">Product Name *</label>
@@ -166,5 +167,10 @@ function AddProductModal({ onClose, onSubmit }) {
     </div>
   );
 }
+
+AddProductModal.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+};
 
 export default AddProductModal;

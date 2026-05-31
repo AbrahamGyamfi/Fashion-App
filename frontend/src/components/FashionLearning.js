@@ -32,6 +32,11 @@ function FashionLearning() {
   };
 
   const handleLike = async (type, id) => {
+    const ALLOWED_TYPES = ['guides', 'outfits'];
+    if (!ALLOWED_TYPES.includes(type) || !/^\d+$/.test(String(id))) {
+      console.error('Invalid type or id');
+      return;
+    }
     try {
       await axios.post(`/api/fashion/${type}/${id}/like`);
       fetchContent();

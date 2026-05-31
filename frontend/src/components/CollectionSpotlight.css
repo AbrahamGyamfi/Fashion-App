@@ -1,0 +1,176 @@
+.collection-spotlight {
+  padding: 64px 24px;
+  max-width: 1280px;
+  margin: 0 auto 48px;
+}
+
+.collection-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.collection-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
+.collection-title {
+  font-family: 'Bodoni Moda', serif;
+  font-size: 40px;
+  font-weight: 700;
+  letter-spacing: -1px;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
+.collection-sub {
+  font-size: 15px;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+/* 4-column grid, first card is wider */
+.collection-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 16px;
+  height: 420px;
+}
+
+.collection-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  display: block;
+  background: #111;
+}
+
+.collection-img {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.6s cubic-bezier(0.4,0,0.2,1);
+}
+
+.collection-card:hover .collection-img {
+  transform: scale(1.07);
+}
+
+.collection-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0,0,0,0.72) 0%,
+    rgba(0,0,0,0.2) 50%,
+    rgba(0,0,0,0.05) 100%
+  );
+  transition: opacity 0.3s;
+}
+
+.collection-card:hover .collection-overlay {
+  opacity: 1.15;
+}
+
+.collection-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: white;
+  text-align: left;
+}
+
+.collection-label {
+  font-family: 'Bodoni Moda', serif;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.collection-grid .collection-card:first-child .collection-label {
+  font-size: 28px;
+}
+
+.collection-subtitle {
+  font-size: 12px;
+  opacity: 0.75;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+}
+
+.collection-cta {
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--accent, #d4af37);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.collection-card:hover .collection-cta {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Thin accent bar at bottom on hover */
+.collection-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--accent, #d4af37);
+  transform: scaleX(0);
+  transition: transform 0.3s;
+  transform-origin: left;
+}
+
+.collection-card:hover::after {
+  transform: scaleX(1);
+}
+
+@media (max-width: 900px) {
+  .collection-grid {
+    grid-template-columns: 1fr 1fr;
+    height: auto;
+    grid-template-rows: 200px 200px;
+  }
+  .collection-grid .collection-card:first-child {
+    grid-column: span 2;
+  }
+  .collection-title {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 600px) {
+  .collection-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    height: auto;
+  }
+  .collection-card {
+    height: 180px;
+  }
+  .collection-grid .collection-card:first-child {
+    grid-column: span 1;
+    height: 220px;
+  }
+}

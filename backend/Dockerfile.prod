@@ -1,20 +1,19 @@
 # Multi-stage build for production
 FROM node:18-alpine AS builder
 
-# Set working directory
 WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
+# Install production dependencies only
 RUN npm ci --only=production --ignore-scripts
 
-# Copy application code
-COPY . .
-
-# Remove development files
-RUN rm -rf .git .github tests *.md
+# Copy application code explicitly
+COPY server.js ./
+COPY routes/ ./routes/
+COPY models/ ./models/
+COPY config/ ./config/
 
 # Production stage
 FROM node:18-alpine
@@ -26,21 +25,21 @@ RUN apk add --no-cache curl
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodejs -u 1001
 
-# Set working directory
 WORKDIR /app
 
 # Copy from builder
-COPY --from=builder --chown=nodejs:nodejs /app ./
+COPY --from=builder --chown=nodejs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=nodejs:nodejs /app/server.js ./
+COPY --from=builder --chown=nodejs:nodejs /app/routes/ ./routes/
+COPY --from=builder --chown=nodejs:nodejs /app/models/ ./models/
+COPY --from=builder --chown=nodejs:nodejs /app/config/ ./config/
+COPY --from=builder --chown=nodejs:nodejs /app/package.json ./
 
-# Switch to non-root user
 USER nodejs
 
-# Expose port
 EXPOSE 3000
 
-# Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
   CMD curl -f http://localhost:3000/api/health || exit 1
 
-# Start application
 CMD ["node", "server.js"]

@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import './PriceFilter.css';
 
 function PriceFilter({ priceRange, onChange }) {
@@ -22,5 +23,13 @@ function PriceFilter({ priceRange, onChange }) {
     </div>
   );
 }
+
+PriceFilter.propTypes = {
+  priceRange: PropTypes.shape({
+    min: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    max: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  }).isRequired,
+  onChange: PropTypes.func.isRequired,
+};
 
 export default PriceFilter;

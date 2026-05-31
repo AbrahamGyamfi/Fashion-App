@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import axios from 'axios';
 import './AuthModal.css';
 
@@ -17,7 +18,7 @@ function AuthModal({ type, onClose, onSuccess }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    
+
     try {
       const endpoint = type === 'login' ? '/api/auth/login' : '/api/auth/register';
       const response = await axios.post(endpoint, formData);
@@ -28,14 +29,14 @@ function AuthModal({ type, onClose, onSuccess }) {
   };
 
   return (
-    <div className="auth-modal-overlay" onClick={onClose}>
-      <div className="auth-modal" onClick={(e) => e.stopPropagation()}>
+    <div className="auth-modal-overlay" onClick={onClose} role="presentation" onKeyDown={(e) => e.key === 'Escape' && onClose()}>
+      <div className="auth-modal" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label="Authentication">
         <button className="auth-modal-close" onClick={onClose}>×</button>
-        
+
         <h2>{type === 'login' ? 'Welcome Back' : 'Create Account'}</h2>
-        
+
         {error && <div className="auth-error">{error}</div>}
-        
+
         <form onSubmit={handleSubmit}>
           {type === 'register' && (
             <>
@@ -56,7 +57,7 @@ function AuthModal({ type, onClose, onSuccess }) {
                     <p>Shop and explore fashion</p>
                   </div>
                 </label>
-                
+
                 <label className={`user-type-option ${formData.user_type === 'vendor' ? 'active' : ''}`}>
                   <input
                     type="radio"
@@ -75,7 +76,7 @@ function AuthModal({ type, onClose, onSuccess }) {
                   </div>
                 </label>
               </div>
-              
+
               <input
                 type="text"
                 placeholder="First Name"
@@ -90,7 +91,7 @@ function AuthModal({ type, onClose, onSuccess }) {
                 onChange={(e) => setFormData({...formData, last_name: e.target.value})}
                 required
               />
-              
+
               {formData.user_type === 'vendor' && (
                 <>
                   <input
@@ -110,31 +111,35 @@ function AuthModal({ type, onClose, onSuccess }) {
               )}
             </>
           )}
-          
+
+          <label htmlFor="email" className="sr-only">Email</label>
           <input
             type="email"
+            id="email"
             placeholder="Email"
             value={formData.email}
             onChange={(e) => setFormData({...formData, email: e.target.value})}
             required
           />
-          
+
+          <label htmlFor="password" className="sr-only">Password</label>
           <input
             type="password"
+            id="password"
             placeholder="Password"
             value={formData.password}
             onChange={(e) => setFormData({...formData, password: e.target.value})}
             required
           />
-          
+
           <button type="submit" className="auth-submit">
             {type === 'login' ? 'Login' : 'Sign Up'}
           </button>
         </form>
-        
+
         <p className="auth-switch">
           {type === 'login' ? "Don't have an account? " : "Already have an account? "}
-          <button onClick={() => window.location.reload()}>
+          <button onClick={() => window.location.reload()}> {/* NOSONAR */}
             {type === 'login' ? 'Sign Up' : 'Login'}
           </button>
         </p>
@@ -142,5 +147,11 @@ function AuthModal({ type, onClose, onSuccess }) {
     </div>
   );
 }
+
+AuthModal.propTypes = {
+  type: PropTypes.oneOf(['login', 'register']).isRequired,
+  onClose: PropTypes.func.isRequired,
+  onSuccess: PropTypes.func.isRequired,
+};
 
 export default AuthModal;
