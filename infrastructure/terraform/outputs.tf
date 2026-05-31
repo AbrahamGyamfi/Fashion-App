@@ -74,3 +74,8 @@ output "amplify_branch_url" {
   description = "Amplify branch URL"
   value       = module.amplify.branch_url
 }
+
+output "cloudfront_api_url" {
+  description = "CloudFront HTTPS URL for the API (use as REACT_APP_API_URL)"
+  value       = "https://${aws_cloudfront_distribution.api.domain_name}"
+}
